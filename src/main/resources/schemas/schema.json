@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Product",
+  "description": "Esquema exemplo para testes",
+  "type": "object",
+  "properties": {
+    "field_1": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "field_1"
+  ]
+}

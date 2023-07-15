@@ -1,0 +1,466 @@
+{
+  "write_date": {
+    "string": "Last Updated on",
+    "type": "datetime"
+  },
+  "outcome_note": {
+    "string": "Note",
+    "type": "html"
+  },
+  "message_main_attachment_id": {
+    "string": "Main Attachment",
+    "type": "many2one"
+  },
+  "was_monitored": {
+    "string": "Was Monitored",
+    "type": "boolean"
+  },
+  "is_event_closed": {
+    "string": "Is Event Current?",
+    "type": "selection"
+  },
+  "rating_avg_text": {
+    "string": "Rating Avg Text",
+    "type": "selection"
+  },
+  "activity_date_deadline": {
+    "string": "Next Activity Deadline",
+    "type": "date"
+  },
+  "activity_state": {
+    "help": "Status based on activities\nOverdue: Due date is already passed\nToday: Activity date is today\nPlanned: Future activities.",
+    "string": "Activity State",
+    "type": "selection"
+  },
+  "message_has_error_counter": {
+    "help": "Number of messages with delivery error",
+    "string": "Number of errors",
+    "type": "integer"
+  },
+  "was_under_verification": {
+    "string": "Was Under Verification",
+    "type": "boolean"
+  },
+  "monitor_signal": {
+    "help": "Tick this to start monitoring this Signal",
+    "string": "Monitor Signal",
+    "type": "boolean"
+  },
+  "signal_related_count": {
+    "string": "Related Count",
+    "type": "integer"
+  },
+  "state_id": {
+    "string": "State",
+    "type": "many2one"
+  },
+  "id": {
+    "string": "ID",
+    "type": "integer"
+  },
+  "initial_id": {
+    "string": "Parent Signal",
+    "type": "many2one"
+  },
+  "outcome_justification_id": {
+    "string": "Outcome Justification",
+    "type": "many2one"
+  },
+  "message_attachment_count": {
+    "string": "Attachment Count",
+    "type": "integer"
+  },
+  "tag_ids": {
+    "string": "Tags",
+    "type": "many2many"
+  },
+  "health_care_workers_affected": {
+    "string": "HealthCare Workers",
+    "type": "integer"
+  },
+  "active": {
+    "string": "Active",
+    "type": "boolean"
+  },
+  "create_uid": {
+    "string": "Created by",
+    "type": "many2one"
+  },
+  "access_token": {
+    "string": "Security Token",
+    "type": "char"
+  },
+  "verified_date": {
+    "string": "Verified Date",
+    "type": "date"
+  },
+  "access_warning": {
+    "string": "Access warning",
+    "type": "text"
+  },
+  "user_id": {
+    "string": "Signal Lead",
+    "type": "many2one"
+  },
+  "general_hazard_id": {
+    "string": "General Hazard",
+    "type": "many2one"
+  },
+  "technical_recommendation_ids": {
+    "string": "Technical Recommendations",
+    "type": "one2many"
+  },
+  "rating_last_image": {
+    "string": "Rating Last Image",
+    "type": "binary"
+  },
+  "was_closed": {
+    "string": "Was Closed",
+    "type": "boolean"
+  },
+  "country_id": {
+    "string": "Country",
+    "type": "many2one"
+  },
+  "initial_id_state": {
+    "string": "Parent Status",
+    "type": "selection"
+  },
+  "message_is_follower": {
+    "string": "Is Follower",
+    "type": "boolean"
+  },
+  "under_verification_date": {
+    "string": "Under V. Date",
+    "type": "date"
+  },
+  "signal_today_update_count": {
+    "string": "Today Update count",
+    "type": "integer"
+  },
+  "confidentiality": {
+    "string": "Confidentiality",
+    "type": "selection"
+  },
+  "was_event_date": {
+    "string": "Was Event on",
+    "type": "date"
+  },
+  "verification_source_id": {
+    "string": "Verification Source",
+    "type": "many2one"
+  },
+  "was_monitored_date": {
+    "string": "Was Monitored on",
+    "type": "date"
+  },
+  "specific_hazard_id": {
+    "string": "Specific Hazard",
+    "type": "many2one"
+  },
+  "resource_calendar_id": {
+    "help": "Timetable working hours to adjust the gantt diagram report",
+    "string": "Working Time",
+    "type": "many2one"
+  },
+  "outcome": {
+    "string": "Final Outcome",
+    "type": "selection"
+  },
+  "recommendation_count": {
+    "string": "Recommendation Count",
+    "type": "integer"
+  },
+  "was_under_verification_date": {
+    "string": "Was Under V. on",
+    "type": "date"
+  },
+  "incident_ids": {
+    "string": "Incidents",
+    "type": "one2many"
+  },
+  "company_id": {
+    "string": "Office",
+    "type": "many2one"
+  },
+  "signal_update_count": {
+    "string": "Update Count",
+    "type": "integer"
+  },
+  "message_has_sms_error": {
+    "help": "If checked, some messages have a delivery error.",
+    "string": "SMS Delivery error",
+    "type": "boolean"
+  },
+  "child_signals_ids": {
+    "string": "Child signals",
+    "type": "one2many"
+  },
+  "monitoring_date": {
+    "string": "Monitoring Date",
+    "type": "date"
+  },
+  "signal_type": {
+    "string": "Signal Type",
+    "type": "selection"
+  },
+  "activity_type_id": {
+    "string": "Next Activity Type",
+    "type": "many2one"
+  },
+  "signal_seq": {
+    "string": "Signal ID",
+    "type": "char"
+  },
+  "rating_percentage_satisfaction": {
+    "string": "Rating Satisfaction",
+    "type": "float"
+  },
+  "rating_last_value": {
+    "string": "Rating Last Value",
+    "type": "float"
+  },
+  "message_ids": {
+    "string": "Messages",
+    "type": "one2many"
+  },
+  "action_taken_ids": {
+    "string": "Actions Taken",
+    "type": "one2many"
+  },
+  "aetiology_id_Related": {
+    "string": "Aetiology name",
+    "type": "char"
+  },
+  "message_partner_ids": {
+    "string": "Followers (Partners)",
+    "type": "many2many"
+  },
+  "incident_date": {
+    "string": "Incident Date",
+    "type": "date"
+  },
+  "privacy_visibility": {
+    "help": "Holds visibility of the tasks or issues that belong to the current incident:\n- On invitation only: Employees may only see the followed incident, tasks or issues\n- Visible by all employees: Employees may see all incident, tasks or issues\n- Visible by following customers: employees see everything;\n   if website is activated, portal users may see incident, tasks or issues followed by\n   them or by someone of their company\n",
+    "string": "Privacy",
+    "type": "selection"
+  },
+  "activity_exception_decoration": {
+    "help": "Type of the exception activity on record.",
+    "string": "Activity Exception Decoration",
+    "type": "selection"
+  },
+  "activity_ids": {
+    "string": "Activities",
+    "type": "one2many"
+  },
+  "signal_state": {
+    "string": "Health Interface",
+    "type": "selection"
+  },
+  "houses_affected": {
+    "string": "Houses",
+    "type": "integer"
+  },
+  "date_closed": {
+    "string": "Closure Date",
+    "type": "date"
+  },
+  "rating_avg": {
+    "string": "Average Rating",
+    "type": "float"
+  },
+  "has_message": {
+    "string": "Has Message",
+    "type": "boolean"
+  },
+  "analytic_account_id": {
+    "help": "Link this project to an analytic account if you need financial management on projects. It enables you to connect projects with budgets, planning, cost and revenue analysis, timesheets on projects, etc.",
+    "string": "Analytic Account",
+    "type": "many2one"
+  },
+  "create_date": {
+    "string": "corrected date",
+    "type": "date"
+  },
+  "source_country_id": {
+    "string": "Source Country",
+    "type": "many2one"
+  },
+  "verification": {
+    "string": "Verification",
+    "type": "selection"
+  },
+  "health_facilities_affected": {
+    "string": "Health Facilities",
+    "type": "integer"
+  },
+  "report_date": {
+    "string": "Report Date",
+    "type": "date"
+  },
+  "people_affected": {
+    "string": "People ",
+    "type": "integer"
+  },
+  "__last_update": {
+    "string": "Last Modified on",
+    "type": "datetime"
+  },
+  "activity_user_id": {
+    "string": "Responsible User",
+    "type": "many2one"
+  },
+  "message_follower_ids": {
+    "string": "Followers",
+    "type": "one2many"
+  },
+  "activity_exception_icon": {
+    "help": "Icon to indicate an exception activity.",
+    "string": "Icon",
+    "type": "char"
+  },
+  "display_name": {
+    "string": "Display Name",
+    "type": "char"
+  },
+  "rating_count": {
+    "string": "Rating count",
+    "type": "integer"
+  },
+  "rating_ids": {
+    "string": "Rating",
+    "type": "one2many"
+  },
+  "sources_ids": {
+    "string": "Sources",
+    "type": "one2many"
+  },
+  "was_event": {
+    "string": "Was Event",
+    "type": "boolean"
+  },
+  "name": {
+    "string": "Signal Title",
+    "type": "char"
+  },
+  "was_closed_date": {
+    "string": "Was Closed on",
+    "type": "date"
+  },
+  "sub_states_ids": {
+    "string": "Sub State",
+    "type": "char"
+  },
+  "website_message_ids": {
+    "help": "Website communication history",
+    "string": "Website Messages",
+    "type": "one2many"
+  },
+  "state_code": {
+    "help": "The state code.",
+    "string": "State Code",
+    "type": "char"
+  },
+  "write_uid": {
+    "string": "Last Updated by",
+    "type": "many2one"
+  },
+  "signal_color": {
+    "string": "Signal Color",
+    "type": "integer"
+  },
+  "description": {
+    "string": "Narrative Description",
+    "type": "html"
+  },
+  "signal_stage_state_id": {
+    "string": "Signal Stage State",
+    "type": "many2one"
+  },
+  "my_activity_date_deadline": {
+    "string": "My Activity Deadline",
+    "type": "date"
+  },
+  "rating_last_feedback": {
+    "string": "Rating Last Feedback",
+    "type": "text"
+  },
+  "was_discarded": {
+    "string": "Was Discarded",
+    "type": "boolean"
+  },
+  "aetiology_id": {
+    "string": "Aetiology",
+    "type": "many2one"
+  },
+  "is_system_country_selected": {
+    "string": "Is System country selected",
+    "type": "boolean"
+  },
+  "activity_type_icon": {
+    "help": "Font awesome icon e.g. fa-tasks",
+    "string": "Activity Type Icon",
+    "type": "char"
+  },
+  "district_ids": {
+    "string": "District(s)",
+    "type": "many2many"
+  },
+  "was_discarded_date": {
+    "string": "Was Discarded on",
+    "type": "date"
+  },
+  "saved_signal_stage_state_id": {
+    "string": "Saved Signal Stage State",
+    "type": "many2one"
+  },
+  "latest_update": {
+    "string": "Latest Update",
+    "type": "datetime"
+  },
+  "access_url": {
+    "help": "Customer Portal URL",
+    "string": "Portal Access URL",
+    "type": "char"
+  },
+  "animals_affected": {
+    "string": "Animals",
+    "type": "integer"
+  },
+  "message_has_error": {
+    "help": "If checked, some messages have a delivery error.",
+    "string": "Message Delivery error",
+    "type": "boolean"
+  },
+  "message_needaction": {
+    "help": "If checked, new messages require your attention.",
+    "string": "Action Needed",
+    "type": "boolean"
+  },
+  "activity_summary": {
+    "string": "Next Activity Summary",
+    "type": "char"
+  },
+  "fatalities": {
+    "string": "Fatalities",
+    "type": "integer"
+  },
+  "message_needaction_counter": {
+    "help": "Number of messages which requires an action",
+    "string": "Number of Actions",
+    "type": "integer"
+  },
+  "date_outcome_decided": {
+    "string": "Date Outcome Decided",
+    "type": "date"
+  },
+  "rating_last_text": {
+    "string": "Rating Text",
+    "type": "selection"
+  },
+  "actions_count": {
+    "string": "Action Count",
+    "type": "integer"
+  }
+}
