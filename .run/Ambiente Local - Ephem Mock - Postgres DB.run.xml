@@ -2,6 +2,9 @@
   <configuration default="false" name="Ambiente Local - Ephem Mock - Postgres DB" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="ACTIVE_PROFILES" />
     <module name="gds2ephem" />
+    <selectedOptions>
+      <option name="environmentVariables" />
+    </selectedOptions>
     <option name="SPRING_BOOT_MAIN_CLASS" value="br.unb.sds.gds2ephem.Gds2ephemApplication" />
     <option name="VM_PARAMETERS" value="-Dspring.profiles.active=local" />
     <extension name="coverage">

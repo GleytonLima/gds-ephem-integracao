@@ -24,7 +24,7 @@ Acesse a [pasta docker](docs/docker) e execute o comando `docker compose up -d`.
 
 ```bash
 cd docker
-docker compose up -d
+docker-compose -f docker-compose-with-app.yml up -d
 ```
 
 A imagem do banco de dados será construida a partir do arquivo [docker/db/Dockerfile](docs/docker/db/Dockerfile) 
@@ -50,7 +50,7 @@ Para subir o banco de dados localmente acesse a [pasta docker](docs/docker) e ex
 
 ```bash
 cd docs/docker
-docker-compose up -d integracaodb
+docker-compose up -d
 ```
 
 Clone este projeto e abra o Intellij. O projeto já vem com uma configuração pronta para ser usada:

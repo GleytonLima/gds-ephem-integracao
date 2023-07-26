@@ -27,6 +27,8 @@ public class EphemScheduler {
     private final EventoIntegracaoRepository eventoIntegracaoRepository;
     private final EphemPort ephemPort;
 
+    private final NarrativeSignalService narrativeSignalService;
+
     @Scheduled(fixedDelay = 30_000, initialDelay = 10_000)
     public void execute() {
         log.info("iniciando processador eventos");
@@ -49,8 +51,11 @@ public class EphemScheduler {
                         final var objectMapper = new ObjectMapper();
                         final var dadosRequest = objectMapper.convertValue(eventoIntegracao.getData(), new TypeReference<Map<String, Object>>() {
                         });
+                        dadosRequest.put("description", narrativeSignalService.buildNarrativeDescription(eventoIntegracao));
+
                         final var signalId = ephemPort.criarSignal(dadosRequest);
-                        eventoIntegracao.setSignalId(Long.valueOf(signalId));
+
+                        eventoIntegracao.setSignalId(signalId);
                         eventoIntegracao.setStatus(EventoIntegracaoStatus.PROCESSADO.name());
                         eventoIntegracao.setStatusMessage(String.format("signal criado com suceso com id: %d", signalId));
                         eventoIntegracaoRepository.save(eventoIntegracao);
