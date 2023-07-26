@@ -5,6 +5,7 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -23,12 +24,12 @@ public class EventoIntegracaoValidator implements Validator {
     public static final String ERRO_INESPERADO_NA_VALIDACAO = "erro inesperado na validacao";
 
     @Override
-    public boolean supports(Class<?> clazz) {
+    public boolean supports(@NonNull Class<?> clazz) {
         return EventoIntegracao.class.equals(clazz);
     }
 
     @Override
-    public void validate(Object eventoIntegracaoObject, Errors errors) {
+    public void validate(@NonNull Object eventoIntegracaoObject, @NonNull Errors errors) {
         log.info("Iniciando validação dos dados para o eventoIntegracaoObject {}", eventoIntegracaoObject);
         try {
             final var eventoIntegracao = ((EventoIntegracao) eventoIntegracaoObject);

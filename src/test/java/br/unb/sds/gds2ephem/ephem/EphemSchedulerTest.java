@@ -36,9 +36,12 @@ class EphemSchedulerTest {
     @Mock
     private EphemPort ephemPort;
 
+    @Mock
+    private NarrativeSignalService narrativeSignalService;
+
     @BeforeEach
     void setUp() {
-        scheduler = new EphemScheduler(transactionTemplate, eventoIntegracaoRepository, ephemPort);
+        scheduler = new EphemScheduler(transactionTemplate, eventoIntegracaoRepository, ephemPort, narrativeSignalService);
     }
 
     @Test
