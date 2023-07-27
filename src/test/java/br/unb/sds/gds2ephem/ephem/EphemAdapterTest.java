@@ -125,10 +125,14 @@ class EphemAdapterTest {
         ReflectionTestUtils.setField(adapter, "db", db);
         ReflectionTestUtils.setField(adapter, "odooApiKey", odooApiKey);
         final var nomeModelo = "modelo";
-        List<String> fields = List.of("field1", "field2");
+        final var fields = List.of("field1", "field2");
+        final var parameters = EphemParameters.builder()
+                .nomeModelo(nomeModelo)
+                .fields(fields)
+                .build();
         when(objectClient.execute(anyString(), anyList())).thenReturn(new Object[]{});
 
-        adapter.listarRegistrosPorNomeModelo(nomeModelo, fields);
+        adapter.listarRegistros(parameters);
 
         verify(objectClient, times(1)).execute(
                 eq(EphemAdapter.EXECUTE_KW),
@@ -140,8 +144,10 @@ class EphemAdapterTest {
                         EphemAdapter.SEARCH_READ_REMOTE_PROCEDURE_NAME,
                         EphemAdapter.SEM_FILTRO,
                         Map.of(
+                                EphemAdapter.LIMIT_PARAMETER_NAME, 10,
+                                EphemAdapter.OFFSET_PARAMETER_NAME, 0,
                                 EphemAdapter.FIELDS_PARAMETER_NAME, fields,
-                                EphemAdapter.LIMIT_PARAMETER_NAME, 10
+                                EphemAdapter.ORDER_BY_PARAMETER_NAME, ""
                         )
                 ))
         );
@@ -155,10 +161,14 @@ class EphemAdapterTest {
         ReflectionTestUtils.setField(adapter, "odooApiKey", odooApiKey);
         final var nomeModelo = "modelo";
         List<String> fields = List.of("field1", "field2");
-
         when(objectClient.execute(eq(EphemAdapter.EXECUTE_KW), anyList())).thenReturn(new Object[]{});
+        final var parameters = EphemParameters.builder()
+                .nomeModelo(nomeModelo)
+                .fields(fields)
+                .id(1L)
+                .build();
 
-        adapter.listarRegistrosPorNomeModeloComId(nomeModelo, fields, 1L);
+        adapter.listarRegistros(parameters);
 
         verify(objectClient, times(1)).execute(
                 eq(EphemAdapter.EXECUTE_KW),
@@ -214,9 +224,13 @@ class EphemAdapterTest {
         ReflectionTestUtils.setField(adapter, "odooApiKey", odooApiKey);
         final var nomeModelo = "modelo";
         final var fields = List.of("field1", "field2");
+        final var parameters = EphemParameters.builder()
+                .nomeModelo(nomeModelo)
+                .fields(fields)
+                .build();
         when(objectClient.execute(anyString(), anyList())).thenThrow(new RuntimeException());
 
-        assertThrows(RuntimeException.class, () -> adapter.listarRegistrosPorNomeModelo(nomeModelo, fields));
+        assertThrows(RuntimeException.class, () -> adapter.listarRegistros(parameters));
 
         verify(objectClient, times(1)).execute(
                 eq(EphemAdapter.EXECUTE_KW),
@@ -229,6 +243,8 @@ class EphemAdapterTest {
                         EphemAdapter.SEM_FILTRO,
                         Map.of(
                                 EphemAdapter.FIELDS_PARAMETER_NAME, fields,
+                                EphemAdapter.ORDER_BY_PARAMETER_NAME, "",
+                                EphemAdapter.OFFSET_PARAMETER_NAME, 0,
                                 EphemAdapter.LIMIT_PARAMETER_NAME, 10
                         )
                 ))

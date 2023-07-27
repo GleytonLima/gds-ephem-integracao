@@ -78,7 +78,12 @@ class EphemNoopAdapterTest {
 
     @Test
     void listarRegistrosPorNomeModeloComId() {
-        assertDoesNotThrow(() -> adapter.listarRegistrosPorNomeModeloComId("model", emptyList(), 1L));
+        final var parameters = EphemParameters.builder()
+                .nomeModelo("model")
+                .fields(emptyList())
+                .id(1L)
+                .build();
+        assertDoesNotThrow(() -> adapter.listarRegistros(EphemParameters.builder().build()));
     }
 
     @Test

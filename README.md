@@ -4,9 +4,9 @@ Esta aplicação age como um middleware entre o aplicativo guardiões da saúde 
 
 ```mermaid
 stateDiagram-v2
-    [*] --> gds
-    gds --> integracao
-    integracao --> gds
+    [*] --> gds_api
+    gds_api --> integracao
+    integracao --> gds_api
     integracao --> ephem
     ephem --> integracao
 ```

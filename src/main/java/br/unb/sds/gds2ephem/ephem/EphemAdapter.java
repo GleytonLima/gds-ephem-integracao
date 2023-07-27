@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -32,7 +33,11 @@ public class EphemAdapter implements EphemPort {
     public static final String ILIKE_COMPARATOR = "ilike";
     public static final String FIELDS_PARAMETER_NAME = "fields";
     public static final String LIMIT_PARAMETER_NAME = "limit";
+
+    public static final String OFFSET_PARAMETER_NAME = "offset";
     public static final String SEARCH_READ_REMOTE_PROCEDURE_NAME = "search_read";
+    public static final String ORDER_BY_PARAMETER_NAME = "order";
+    public static final String EOC_SIGNAL = "eoc.signal";
 
     private final XmlRpcClient xmlRpcClientObject;
     private final XmlRpcClient xmlRpcClientCommon;
@@ -89,29 +94,24 @@ public class EphemAdapter implements EphemPort {
 
     @Override
     @SneakyThrows
-    public List<Object> listarRegistrosPorNomeModelo(final String nomeModelo, final List<String> fields) {
-        autenticar();
-        return this.listarRegistrosPorNomeModeloComId(nomeModelo, fields, null);
-    }
-
-    @Override
-    @SneakyThrows
-    public List<Object> listarRegistrosPorNomeModeloComId(final String nomeModelo, final List<String> fields, final Long id) {
+    public List<Object> listarRegistros(EphemParameters ephemParameters) {
         autenticar();
         final var dadosPesquisa = Map.ofEntries(
-                entry(FIELDS_PARAMETER_NAME, fields),
-                entry(LIMIT_PARAMETER_NAME, 10)
+                entry(FIELDS_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getFields()).orElse(emptyList())),
+                entry(LIMIT_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getSize()).orElse(10)),
+                entry(OFFSET_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getOffset()).orElse(0)),
+                entry(ORDER_BY_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getSort()).orElse(""))
         );
         var filtros = SEM_FILTRO;
-        if (nonNull(id)) {
+        if (nonNull(ephemParameters.getId())) {
             filtros = List.of(List.of(
-                    List.of("id", "=", id)));
+                    List.of("id", "=", ephemParameters.getId())));
         }
         final var parametrosExecucaoRemota = asList(
                 db,
                 uid,
                 odooApiKey,
-                nomeModelo,
+                ephemParameters.getNomeModelo(),
                 SEARCH_READ_REMOTE_PROCEDURE_NAME,
                 filtros,
                 dadosPesquisa
@@ -170,7 +170,7 @@ public class EphemAdapter implements EphemPort {
     @SneakyThrows
     public Long criarSignal(final Map<String, Object> dados) {
         this.autenticar();
-        final var parametros = asList(db, uid, odooApiKey, "eoc.signal", "create", List.of(dados));
+        final var parametros = asList(db, uid, odooApiKey, EOC_SIGNAL, "create", List.of(dados));
         final var signalId = ((Integer) this.xmlRpcClientObject.execute(EXECUTE_KW, parametros)).longValue();
         log.info("signal criado com suceso com id: {}", signalId);
         try {
@@ -191,7 +191,7 @@ public class EphemAdapter implements EphemPort {
                 entry("body", mensagem),
                 entry("author_id", uid),
                 entry("message_type", "comment"),
-                entry(MODEL_PARAMETER_NAME, "eoc.signal"),
+                entry(MODEL_PARAMETER_NAME, EOC_SIGNAL),
                 entry("res_id", signalId)
         );
         final var executeParametros = asList(db, uid, odooApiKey, "mail.message", "create", List.of(mensagemParametros));
@@ -201,11 +201,25 @@ public class EphemAdapter implements EphemPort {
 
     @Override
     public HashMap<String, Object> consultarSignalPorId(Long id) {
-        final var list = this.listarRegistrosPorNomeModeloComId("eoc.signal", asList("id", "confidentiality", "tag_ids", "general_hazard_id", "specific_hazard_id", "state_id", "signal_type", "report_date", "incident_date", "name", "message_ids"), id);
+        final var emphemParameters = EphemParameters.builder()
+                .nomeModelo(EOC_SIGNAL)
+                .fields(asList("id", "confidentiality", "tag_ids", "general_hazard_id", "specific_hazard_id", "state_id", "signal_type", "report_date", "incident_date", "name", "message_ids"))
+                .id(id)
+                .build();
+        final var list = this.listarRegistros(emphemParameters);
         if (list.isEmpty()) {
             return new HashMap<>();
         }
         return (HashMap<String, Object>) list.get(0);
+    }
+
+    @Override
+    @SneakyThrows
+    public void deletarSignalPorId(Long signalId) {
+        this.autenticar();
+        final var executeParametros = asList(db, uid, odooApiKey, EOC_SIGNAL, "unlink", List.of(List.of(signalId)));
+
+        this.xmlRpcClientObject.execute(EXECUTE_KW, executeParametros);
     }
 
 

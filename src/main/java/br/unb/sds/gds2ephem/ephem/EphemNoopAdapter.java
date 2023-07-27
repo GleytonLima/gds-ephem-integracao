@@ -35,7 +35,7 @@ public class EphemNoopAdapter implements EphemPort {
     }
 
     @Override
-    public List<Object> listarRegistrosPorNomeModeloComId(String nomeModelo, List<String> fields, Long id) {
+    public List<Object> listarRegistros(EphemParameters ephemParameters) {
         return emptyList();
     }
 
@@ -67,5 +67,10 @@ public class EphemNoopAdapter implements EphemPort {
     @Override
     public HashMap<String, Object> consultarSignalPorId(Long id) {
         return new HashMap<>();
+    }
+
+    @Override
+    public void deletarSignalPorId(Long signalId) {
+        log.info("deletarSignalPorId Noop");
     }
 }
