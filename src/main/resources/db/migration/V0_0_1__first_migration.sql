@@ -47,8 +47,17 @@ VALUES ('{
     "specific_hazard_id": {
       "type": "integer"
     },
+    "country_id": {
+      "type": "integer"
+    },
     "state_id": {
-      "type": "boolean"
+      "type": "integer"
+    },
+    "district_ids": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
     },
     "signal_type": {
       "type": "string",
@@ -71,7 +80,9 @@ VALUES ('{
     "general_hazard_id",
     "confidentiality",
     "specific_hazard_id",
+    "country_id",
     "state_id",
+    "district_ids",
     "signal_type",
     "report_date",
     "incident_date"

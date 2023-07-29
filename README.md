@@ -4,9 +4,9 @@ Esta aplicação age como um middleware entre o aplicativo guardiões da saúde 
 
 ```mermaid
 stateDiagram-v2
-    [*] --> gds
-    gds --> integracao
-    integracao --> gds
+    [*] --> gds_api
+    gds_api --> integracao
+    integracao --> gds_api
     integracao --> ephem
     ephem --> integracao
 ```
@@ -53,7 +53,7 @@ cd docs/docker
 docker-compose up -d
 ```
 
-Clone este projeto e abra o Intellij. O projeto já vem com uma configuração pronta para ser usada:
+Clone este projeto e abra o [Intellij IDE](https://www.jetbrains.com/idea/). O projeto já vem com uma configuração pronta para ser usada:
 
 ![img.png](docs/configuracao-intellij.png)
 

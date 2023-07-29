@@ -8,8 +8,13 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import static java.util.Objects.isNull;
+
 @Service
 public class NarrativeSignalService {
+
+    public static final String EMPTY_STRING = "";
+
     public String buildNarrativeDescription(final EventoIntegracao eventoIntegracao) {
         final var mapaTabela = eventoIntegracao.extrairTableData();
         return buildHeaderMessage(eventoIntegracao) + buildHtmlTable(mapaTabela);
@@ -38,6 +43,9 @@ public class NarrativeSignalService {
     }
 
     public String buildHtmlTable(Map<String, String> dataMap) {
+        if (isNull(dataMap) || dataMap.isEmpty()) {
+            return EMPTY_STRING;
+        }
         final var tableHtml = new StringBuilder();
 
         tableHtml.append("<table class=\"table table-bordered o_table\">");

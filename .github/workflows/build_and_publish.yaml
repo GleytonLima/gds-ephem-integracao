@@ -62,3 +62,15 @@ jobs:
         run: |
           docker build -t ${{ env.DOCKER_IMAGE_NAME }} .
           docker push ${{ env.DOCKER_IMAGE_NAME }}
+      - name: restart app on digital ocean
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd gds-vbe-api/
+            docker-compose stop integracaoapp
+            docker-compose pull integracaoapp
+            docker-compose up -d integracaoapp

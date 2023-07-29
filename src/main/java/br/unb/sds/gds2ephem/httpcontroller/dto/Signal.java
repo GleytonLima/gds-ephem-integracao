@@ -10,6 +10,7 @@ import java.util.HashMap;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Signal {
-    private Long id;
+    private Long eventId;
+    private Long signalId;
     private HashMap<String, Object> dados;
 }

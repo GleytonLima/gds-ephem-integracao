@@ -1,5 +1,7 @@
 package br.unb.sds.gds2ephem.application;
 
+import br.unb.sds.gds2ephem.ephem.EphemParameters;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,9 +11,7 @@ public interface EphemPort {
 
     Object listarAtributosPorNomeModelo(String modelName);
 
-    List<Object> listarRegistrosPorNomeModelo(String nomeModelo, List<String> fields);
-
-    List<Object> listarRegistrosPorNomeModeloComId(final String nomeModelo, final List<String> fields, final Long id);
+    List<Object> listarRegistros(EphemParameters ephemParameters);
 
     Object recuperarVersaoInstanciaOdoo();
 
@@ -24,4 +24,6 @@ public interface EphemPort {
     Long criarMensagem(Long signalId, String mensagem);
 
     HashMap<String, Object> consultarSignalPorId(Long id);
+
+    void deletarSignalPorId(Long signalId);
 }
