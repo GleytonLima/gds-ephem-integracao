@@ -11,6 +11,11 @@ stateDiagram-v2
     integracao --> ephem
     ephem --> integracao
 ```
+
+## Documentação da API
+
+https://vbeapi.online/api-integracao/v1/swagger-ui/#/
+
 ## Subindo a aplicação localmente
 ### Pré-requisitos
 

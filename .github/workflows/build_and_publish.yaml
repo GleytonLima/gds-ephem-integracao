@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: gds-ephem-integracao
     needs: build
-    if: success() && github.ref == 'refs/heads/master'
+    if: success() && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
