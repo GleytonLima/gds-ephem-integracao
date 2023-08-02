@@ -1,4 +1,5 @@
 # Projeto de Integração GDS com EPHEM
+[![coverage](https://raw.githubusercontent.com/GleytonLima/gds-ephem-integracao/badges/jacoco.svg)](https://github.com/GleytonLima/gds-ephem-integracao/actions/workflows/build_and_publish.yaml) [![branches coverage](https://raw.githubusercontent.com/GleytonLima/gds-ephem-integracao/badges/branches.svg)](https://github.com/GleytonLima/gds-ephem-integracao/actions/workflows/build_and_publish.yaml)
 
 Esta aplicação age como um middleware entre o aplicativo guardiões da saúde e o ephem.
 
