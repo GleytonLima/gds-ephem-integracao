@@ -39,6 +39,10 @@ jobs:
           name: ${{ env.SWAGGER_ARTIFACT_NAME }}
           path: target/*.json
           retention-days: 7
+      - name: Generate JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          generate-branches-badge: true
   docker:
     runs-on: ubuntu-latest
     environment: gds-ephem-integracao
