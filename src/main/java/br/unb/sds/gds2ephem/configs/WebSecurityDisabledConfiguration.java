@@ -12,8 +12,14 @@ public class WebSecurityDisabledConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authz ->
+        {
+            try {
                 authz.antMatchers("/**").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated().and().csrf().disable();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
         http.oauth2ResourceServer().jwt();
         return http.build();
     }
