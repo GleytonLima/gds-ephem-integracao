@@ -1,0 +1,4 @@
+ALTER TABLE evento_integracao_template ADD COLUMN input_ephem_map jsonb;
+UPDATE evento_integracao_template
+SET input_ephem_map = '{"state_id": {"from": "geo_state", "type": "integer", "default_value": "0"}, "country_id": {"from": "geo_country", "type": "integer", "default_value": "0"}, "report_date": {"from": "evento_data_ocorrencia", "type": "date", "default_value": "@now"}, "signal_type": {"from": [], "type": "string", "default_value": "opening"}, "district_ids": {"from": ["geo_city", "geo_location"], "type": "string", "default_value": "[]"}, "incident_date": {"from": "evento_local_ocorrencia", "type": "date", "default_value": "@now"}, "confidentiality": {"from": [], "type": "string", "default_value": "everyone"}, "general_hazard_id": {"from": [], "type": "date", "from_format": "", "default_value": "0"}, "specific_hazard_id": {"from": [], "type": "integer", "default_value": "0"}}'
+WHERE id = 1;

@@ -29,4 +29,7 @@ public class EventoIntegracaoTemplate {
     private Instant createdAt;
     @LastModifiedDate
     private Instant updatedAt;
+    @Type(type = "json")
+    @Column(columnDefinition = "jsonb")
+    private JsonNode inputEphemMap;
 }

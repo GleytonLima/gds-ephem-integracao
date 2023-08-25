@@ -37,6 +37,7 @@ public class EventoIntegracaoValidator implements Validator {
                 errors.rejectValue(EVENTO_INTEGRACAO_FIELD_NAME, TEMPLATE_NAO_ENCONTRADO);
                 return;
             }
+            eventoIntegracao.mapearData();
 
             final var factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
             final var jsonSchema = factory.getSchema(eventoIntegracao.getEventoIntegracaoTemplate().getDefinition());
