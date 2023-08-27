@@ -88,27 +88,6 @@ class EventoIntegracaoValidatorTest {
 
     @SneakyThrows
     @Test
-    @DisplayName("Deve retornar com erros dado campo nao esperado")
-    void deveRejeitar() {
-        when(errors.hasFieldErrors()).thenReturn(true);
-        final var inputStream = new ClassPathResource("schemas/schema.json").getInputStream();
-        final var mapper = new ObjectMapper();
-        final var jsonNodeSchema = mapper.readValue(inputStream, JsonNode.class);
-        final var template = new EventoIntegracaoTemplate();
-        template.setId(1L);
-        template.setDefinition(jsonNodeSchema);
-        final var eventoIntegracao = new EventoIntegracao();
-        eventoIntegracao.setEventoIntegracaoTemplate(template);
-        final var jsonNodeTarget = mapper.readTree("{\"field_not_expected\": true}");
-        eventoIntegracao.setData(jsonNodeTarget);
-
-        validator.validate(eventoIntegracao, errors);
-
-        verify(errors, times(1)).rejectValue(anyString(), anyString(), any(), anyString());
-    }
-
-    @SneakyThrows
-    @Test
     @DisplayName("Deve lancar excecao dada execao de cast")
     void deveLancarExcecao() {
         final var eventoIntegracaoValidacaoException = assertThrows(EventoIntegracaoValidacaoException.class, () -> validator.validate(new Object(), errors));

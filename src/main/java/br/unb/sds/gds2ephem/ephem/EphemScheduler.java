@@ -4,8 +4,13 @@ import br.unb.sds.gds2ephem.application.EphemPort;
 import br.unb.sds.gds2ephem.application.EventoIntegracaoRepository;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracaoStatus;
+import br.unb.sds.gds2ephem.application.model.exceptions.EventoIntegracaoValidacaoException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion;
+import com.networknt.schema.ValidationMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,6 +19,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -28,6 +34,7 @@ public class EphemScheduler {
     private final EphemPort ephemPort;
 
     private final NarrativeSignalService narrativeSignalService;
+    private final EphemMapper ephemMapper;
 
     @Scheduled(fixedDelay = 30_000, initialDelay = 10_000)
     public void execute() {
@@ -49,7 +56,10 @@ public class EphemScheduler {
                     try {
                         log.info("processando evento {}", eventoIntegracao.getId());
                         final var objectMapper = new ObjectMapper();
-                        final var dadosRequest = objectMapper.convertValue(eventoIntegracao.getData(), new TypeReference<Map<String, Object>>() {
+                        final var dadosMapeados = ephemMapper.mapearData(eventoIntegracao);
+
+                        validarDados(eventoIntegracao.getEventoIntegracaoTemplate().getDefinition(), dadosMapeados);
+                        final var dadosRequest = objectMapper.convertValue(dadosMapeados, new TypeReference<Map<String, Object>>() {
                         });
                         dadosRequest.put("description", narrativeSignalService.buildNarrativeDescription(eventoIntegracao));
 
@@ -69,6 +79,22 @@ public class EphemScheduler {
                 }
                 return true;
             }));
+        }
+    }
+
+    public void validarDados(JsonNode definition, JsonNode data) {
+        final var factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+        final var jsonSchema = factory.getSchema(definition);
+
+        final var errosSchema = jsonSchema.validate(data);
+
+        final var listaErros = errosSchema.stream()
+                .map(ValidationMessage::getMessage)
+                .collect(Collectors.toList());
+
+        if (!listaErros.isEmpty()) {
+            log.error("Erro ao processar os dados: {}", listaErros);
+            throw new EventoIntegracaoValidacaoException(listaErros.toString());
         }
     }
 }

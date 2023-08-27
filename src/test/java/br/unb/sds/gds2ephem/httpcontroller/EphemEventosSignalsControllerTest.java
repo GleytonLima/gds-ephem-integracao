@@ -61,6 +61,7 @@ class EphemEventosSignalsControllerTest {
         final var evento = new EventoIntegracao();
         evento.setId(10);
         evento.setSignalId(1L);
+        evento.setStatus("PROCESSADO");
         when(eventoIntegracaoRepository.findById(anyLong())).thenReturn(Optional.of(evento));
         when(ephemPort.consultarSignalPorId(id)).thenReturn(dados);
 
@@ -81,6 +82,7 @@ class EphemEventosSignalsControllerTest {
         final var evento = new EventoIntegracao();
         evento.setId(eventoId);
         evento.setSignalId(signalId);
+        evento.setStatus("PROCESSADO");
         when(eventoIntegracaoRepository.findById(eventoId)).thenReturn(Optional.of(evento));
         when(ephemPort.consultarSignalPorId(signalId)).thenReturn(new HashMap<>());
 

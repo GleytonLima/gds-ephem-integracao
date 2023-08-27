@@ -1,0 +1,79 @@
+{
+  "general_hazard_id": {
+    "from": [
+      "campo_nao_existente_no_input"
+    ],
+    "default_value": "0",
+    "type": "integer"
+  },
+  "campo_sem_valor_default": {
+    "from": [
+      "campo_nao_existente_no_input"
+    ],
+    "type": "string"
+  },
+  "specific_hazard_id": {
+    "from": [],
+    "default_value": "0",
+    "type": "integer"
+  },
+  "state_id": {
+    "from": [
+      "geo_state"
+    ],
+    "default_value": "0",
+    "type": "model",
+    "model_name": "res.country.state",
+    "model_property_filter": "name"
+  },
+  "country_id": {
+    "from": [
+      "geo_country"
+    ],
+    "default_value": "0",
+    "type": "model",
+    "model_name": "res.country",
+    "model_property_filter": "name"
+  },
+  "district_ids": {
+    "from": [
+      "geo_location",
+      "geo_city"
+    ],
+    "type": "model",
+    "default_value": "@search('Nova Localidade')",
+    "model_name": "res.country.state.district",
+    "model_property_filter": "name"
+  },
+  "signal_type": {
+    "from": [],
+    "default_value": "opening",
+    "type": "string"
+  },
+  "report_date": {
+    "from": [
+      "evento_data_ocorrencia"
+    ],
+    "default_value": "@today",
+    "type": "date",
+    "from_format": "dd-MM-yyyy"
+  },
+  "incident_date": {
+    "from": [
+      "evento_data_ocorrencia"
+    ],
+    "default_value": "@today",
+    "type": "date",
+    "from_format": "dd-MM-yyyy"
+  },
+  "data_today": {
+    "from": [],
+    "default_value": "@today",
+    "type": "date"
+  },
+  "numero_invalido_cai_no_default": {
+    "from": [],
+    "default_value": "numero_invalido_123",
+    "type": "integer"
+  }
+}

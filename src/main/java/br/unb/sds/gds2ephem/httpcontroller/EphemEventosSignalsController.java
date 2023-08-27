@@ -13,8 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -31,6 +33,16 @@ public class EphemEventosSignalsController {
         final var evento = eventoIntegracaoRepository.findById(eventId);
         if (evento.isEmpty()) {
             throw new ResponseStatusException(NOT_FOUND, "evento nao encontrado");
+        }
+        if (evento.get().getStatus().equals(EventoIntegracaoStatus.CRIADO.name())) {
+            final var dadosEmProcessamento = new HashMap<String, Object>();
+            dadosEmProcessamento.put("signal_stage_state_id", List.of(0, "Em processamento"));
+            final var signals = new Signal(eventId, 0L, dadosEmProcessamento);
+            final var link = linkTo(Signal.class).withSelfRel();
+            return CollectionModel.of(List.of(signals), link);
+        }
+        if (isNull(evento.get().getSignalId())) {
+            throw new ResponseStatusException(NOT_FOUND, "signal nao encontrado");
         }
         final var dados = ephemPort.consultarSignalPorId(evento.get().getSignalId());
         if (dados.isEmpty()) {

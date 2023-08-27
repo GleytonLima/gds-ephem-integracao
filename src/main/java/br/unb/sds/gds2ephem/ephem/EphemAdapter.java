@@ -31,6 +31,7 @@ public class EphemAdapter implements EphemPort {
     public static final String MODEL_PARAMETER_NAME = "model";
     public static final String MODULES_PARAMETER_NAME = "modules";
     public static final String ILIKE_COMPARATOR = "ilike";
+    public static final String EQUALS_IGNORECASE_COMPARATOR = "=ilike";
     public static final String FIELDS_PARAMETER_NAME = "fields";
     public static final String LIMIT_PARAMETER_NAME = "limit";
 
@@ -38,6 +39,9 @@ public class EphemAdapter implements EphemPort {
     public static final String SEARCH_READ_REMOTE_PROCEDURE_NAME = "search_read";
     public static final String ORDER_BY_PARAMETER_NAME = "order";
     public static final String EOC_SIGNAL = "eoc.signal";
+    public static final String CONTEXT_PARAMETER_NAME = "context";
+    public static final String CONTEXT_LANG_KEY = "lang";
+    public static final String PT_BR = "pt_BR";
 
     private final XmlRpcClient xmlRpcClientObject;
     private final XmlRpcClient xmlRpcClientCommon;
@@ -100,19 +104,19 @@ public class EphemAdapter implements EphemPort {
                 entry(FIELDS_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getFields()).orElse(emptyList())),
                 entry(LIMIT_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getSize()).orElse(10)),
                 entry(OFFSET_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getOffset()).orElse(0)),
-                entry(ORDER_BY_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getSort()).orElse(""))
+                entry(ORDER_BY_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getSort()).orElse("")),
+                entry(CONTEXT_PARAMETER_NAME, Map.ofEntries(
+                        entry(CONTEXT_LANG_KEY, Optional.ofNullable(ephemParameters.getContextLang()).orElse(PT_BR))
+                ))
         );
-        var filtros = SEM_FILTRO;
+        var filtros = Optional.ofNullable(ephemParameters.getFiltros()).orElse(SEM_FILTRO);
         if (nonNull(ephemParameters.getId())) {
             filtros = List.of(List.of(
                     List.of("id", "=", ephemParameters.getId())));
         }
         final var parametrosExecucaoRemota = asList(
-                db,
-                uid,
-                odooApiKey,
-                ephemParameters.getNomeModelo(),
-                SEARCH_READ_REMOTE_PROCEDURE_NAME,
+                db, uid, odooApiKey,
+                ephemParameters.getNomeModelo(), SEARCH_READ_REMOTE_PROCEDURE_NAME,
                 filtros,
                 dadosPesquisa
         );
@@ -203,7 +207,7 @@ public class EphemAdapter implements EphemPort {
     public HashMap<String, Object> consultarSignalPorId(Long id) {
         final var emphemParameters = EphemParameters.builder()
                 .nomeModelo(EOC_SIGNAL)
-                .fields(asList("id", "confidentiality", "tag_ids", "general_hazard_id", "specific_hazard_id", "state_id", "signal_type", "report_date", "incident_date", "name", "message_ids"))
+                .fields(asList("id", "signal_stage_state_id"))
                 .id(id)
                 .build();
         final var list = this.listarRegistros(emphemParameters);

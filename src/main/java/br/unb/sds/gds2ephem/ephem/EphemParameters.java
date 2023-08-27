@@ -17,7 +17,9 @@ public class EphemParameters {
     public static final List<String> SIGNAL_DEFAULT_PARAMETERS = asList("id", "description", "confidentiality", "tag_ids", "general_hazard_id", "specific_hazard_id", "country_id", "state_id", "district_ids", "signal_type", "report_date", "incident_date", "name", "message_ids", "signal_stage_state_id");
 
     private String nomeModelo;
+    private String contextLang;
     private List<String> fields;
+    private Object filtros;
     private Long id;
     private Integer offset;
     private Integer size;
