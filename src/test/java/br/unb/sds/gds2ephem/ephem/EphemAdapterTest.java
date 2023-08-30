@@ -13,8 +13,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static br.unb.sds.gds2ephem.ephem.EphemAdapter.CONTEXT_LANG_KEY;
+import static br.unb.sds.gds2ephem.ephem.EphemAdapter.CONTEXT_PARAMETER_NAME;
 import static java.util.Collections.emptyList;
+import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -147,6 +151,9 @@ class EphemAdapterTest {
                                 EphemAdapter.LIMIT_PARAMETER_NAME, 10,
                                 EphemAdapter.OFFSET_PARAMETER_NAME, 0,
                                 EphemAdapter.FIELDS_PARAMETER_NAME, fields,
+                                CONTEXT_PARAMETER_NAME, Map.ofEntries(
+                                        entry(CONTEXT_LANG_KEY, "pt_BR")
+                                ),
                                 EphemAdapter.ORDER_BY_PARAMETER_NAME, ""
                         )
                 ))
@@ -243,6 +250,9 @@ class EphemAdapterTest {
                         EphemAdapter.SEM_FILTRO,
                         Map.of(
                                 EphemAdapter.FIELDS_PARAMETER_NAME, fields,
+                                CONTEXT_PARAMETER_NAME, Map.ofEntries(
+                                        entry(CONTEXT_LANG_KEY, "pt_BR")
+                                ),
                                 EphemAdapter.ORDER_BY_PARAMETER_NAME, "",
                                 EphemAdapter.OFFSET_PARAMETER_NAME, 0,
                                 EphemAdapter.LIMIT_PARAMETER_NAME, 10

@@ -1,6 +1,7 @@
 package br.unb.sds.gds2ephem.application.model;
 
 import br.unb.sds.gds2ephem.application.model.exceptions.EventoIntegracaoValidacaoException;
+import br.unb.sds.gds2ephem.ephem.EphemMapper;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
@@ -16,12 +17,7 @@ import static java.util.Objects.isNull;
 
 @Slf4j
 @Component("beforeCreateEventoIntegracaoValidator")
-public class EventoIntegracaoValidator implements Validator {
-
-    public static final String DATA_FIELD_NAME = "data";
-    public static final String SCHEMA_PATH = "schemas/schema.json";
-    public static final String EVENTO_INTEGRACAO_FIELD_NAME = "eventoIntegracaoTemplate";
-    public static final String ERRO_INESPERADO_NA_VALIDACAO = "erro inesperado na validacao";
+public class EventoIntegracaoValidator implements Validator {    public static final String EVENTO_INTEGRACAO_FIELD_NAME = "eventoIntegracaoTemplate";
 
     @Override
     public boolean supports(@NonNull Class<?> clazz) {
@@ -35,19 +31,6 @@ public class EventoIntegracaoValidator implements Validator {
             final var eventoIntegracao = ((EventoIntegracao) eventoIntegracaoObject);
             if (isNull(eventoIntegracao.getEventoIntegracaoTemplate()) || isNull(eventoIntegracao.getEventoIntegracaoTemplate().getId())) {
                 errors.rejectValue(EVENTO_INTEGRACAO_FIELD_NAME, TEMPLATE_NAO_ENCONTRADO);
-                return;
-            }
-
-            final var factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
-            final var jsonSchema = factory.getSchema(eventoIntegracao.getEventoIntegracaoTemplate().getDefinition());
-
-            final var errosSchema = jsonSchema.validate(eventoIntegracao.getData());
-
-            for (ValidationMessage validationMessage : errosSchema) {
-                errors.rejectValue(DATA_FIELD_NAME, DADOS_INVALIDOS, new Object[]{validationMessage.getMessage()}, ERRO_INESPERADO_NA_VALIDACAO);
-            }
-            if (errors.hasFieldErrors()) {
-                log.error("Erro ao processar os dados {}: {}", eventoIntegracaoObject, errors);
             }
         } catch (Exception e) {
             log.error("erro ao processa validacao: {}", e.getMessage());
