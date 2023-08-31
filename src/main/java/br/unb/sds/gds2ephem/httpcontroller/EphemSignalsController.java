@@ -48,7 +48,7 @@ public class EphemSignalsController {
         }
         final var signals = dados.stream()
                 .map(s -> (HashMap<String, Object>) s)
-                .map(s -> new Signal(Long.parseLong(s.get("id").toString()), null, s))
+                .map(s -> new Signal(null, Long.parseLong(s.get("id").toString()), s))
                 .collect(Collectors.toList());
         final var link = linkTo(Signal.class).withSelfRel();
         return CollectionModel.of(List.of(signals), link);

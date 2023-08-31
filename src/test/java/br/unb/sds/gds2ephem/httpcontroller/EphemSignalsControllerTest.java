@@ -65,6 +65,6 @@ class EphemSignalsControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(jsonPath("$._embedded.signals").isArray())
                 .andExpect(jsonPath("$._embedded.signals.length()").value(1))
-                .andExpect(jsonPath("$._embedded.signals[0].eventId").value(1));
+                .andExpect(jsonPath("$._embedded.signals[0].signalId").value(1));
     }
 }

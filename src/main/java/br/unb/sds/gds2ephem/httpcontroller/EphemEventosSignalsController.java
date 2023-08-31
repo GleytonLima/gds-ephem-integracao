@@ -36,7 +36,7 @@ public class EphemEventosSignalsController {
         }
         if (evento.get().getStatus().equals(EventoIntegracaoStatus.CRIADO.name())) {
             final var dadosEmProcessamento = new HashMap<String, Object>();
-            dadosEmProcessamento.put("signal_stage_state_id", List.of(0, "Em processamento"));
+            dadosEmProcessamento.put("signal_stage_state_id", List.of(0, "Novo"));
             final var signals = new Signal(eventId, 0L, dadosEmProcessamento);
             final var link = linkTo(Signal.class).withSelfRel();
             return CollectionModel.of(List.of(signals), link);

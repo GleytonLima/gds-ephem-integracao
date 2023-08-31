@@ -41,6 +41,7 @@ public class EventoIntegracao {
     private Long signalId;
     private String eventSourceId;
     private String eventSourceLocation;
+    private Long eventSourceLocationId;
     private Long userId;
     private String userEmail;
     @CreatedDate
