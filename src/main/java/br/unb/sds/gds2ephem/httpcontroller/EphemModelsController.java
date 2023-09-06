@@ -38,12 +38,14 @@ public class EphemModelsController {
     public CollectionModel<?> getModels(@PathVariable("modelId") String modelId,
                                         @RequestParam(value = "filter_name", required = false) String filterName,
                                         @RequestParam(value = "filter_value", required = false) String filterValue,
-                                        @RequestParam(value = "filter_comparator", required = false) String filterComparator) {
+                                        @RequestParam(value = "filter_comparator", required = false) String filterComparator,
+                                        @RequestParam(value = "size", required = false) Integer size) {
         Locale locale = LocaleContextHolder.getLocale();
         log.info("Locale request {}", locale);
         final var paramters = EphemParameters.builder()
                 .nomeModelo(modelId)
                 .contextLang(locale.toString())
+                .size(size)
                 .fields(emptyList())
                 .build();
         if (nonNull(filterName) && nonNull(filterValue) && nonNull(filterComparator)) {
