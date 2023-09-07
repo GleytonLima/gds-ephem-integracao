@@ -31,7 +31,7 @@ class SignalTest {
         signal.getDados().put("status", new Object[] {0, "invalid_status"});
         signal.traduzirStatus();
         Map<String, Object> translatedData = signal.getDados();
-        assertEquals("-", ((Object[]) translatedData.get("status"))[1]);
+        assertEquals("invalid_status", ((Object[]) translatedData.get("status"))[1]);
     }
 
     @Test
@@ -47,7 +47,7 @@ class SignalTest {
         signal.getDados().put("status", new Object[] {0, "some_status"});
         signal.traduzirStatus();
         Map<String, Object> translatedData = signal.getDados();
-        assertEquals("-", ((Object[]) translatedData.get("status"))[1]);
+        assertEquals("some_status", ((Object[]) translatedData.get("status"))[1]);
     }
 
     @Test

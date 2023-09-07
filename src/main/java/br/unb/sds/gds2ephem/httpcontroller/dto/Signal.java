@@ -41,8 +41,6 @@ public class Signal {
                     String palavraChave = (String) arrayValor[1];
                     if (substituicoes.containsKey(palavraChave.toLowerCase())) {
                         arrayValor[1] = substituicoes.get(palavraChave.toLowerCase());
-                    } else {
-                        arrayValor[1] = substituicoes.get("invalid");
                     }
                 }
             }
