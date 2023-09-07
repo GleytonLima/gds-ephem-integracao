@@ -1,0 +1,28 @@
+{
+  "eventoIntegracaoTemplate": "/1",
+  "userId": 3,
+  "userEmail": "juca@teste.com",
+  "eventSourceId": 1,
+  "eventSourceLocation": "comunidade B",
+  "eventSourceLocationId": 1,
+  "data": {
+    "general_hazard_id": 0,
+    "confidentiality": "everyone",
+    "specific_hazard_id": 7,
+    "state_id": 77,
+    "country_id": 31,
+    "district_ids": [
+      1
+    ],
+    "signal_type": "opening",
+    "report_date": "2023-01-01",
+    "incident_date": "2023-01-01"
+  },
+  "aditionalData": {
+    "Tipo de Notificação": "Coletiva",
+    "Tipo de Ocorrência": "Em Humanos",
+    "Quantos Envolvidos": "Mais de 5",
+    "Exemplo 2": "Valor 2",
+    "TesteX": "Valor 3"
+  }
+}

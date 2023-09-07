@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "a258f043-3b02-4056-90c5-ae6778c2cc60",
+		"name": "gds2ephem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2862527"
+	},
+	"item": [
+		{
+			"name": "Criar Evento",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"eventoIntegracaoTemplate\": \"/1\",\r\n    \"data\": {\r\n        \"general_hazard_id\": 7,\r\n        \"confidentiality\": \"ministries\",\r\n        \"specific_hazard_id\": 7,\r\n        \"state_id\": false,\r\n        \"signal_type\": \"opening\",\r\n        \"report_date\": \"{{today}}\",\r\n        \"incident_date\": \"{{today}}\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api-integracao/v1/eventos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api-integracao",
+						"v1",
+						"eventos"
+					]
+				},
+				"description": "Nesta request podemos enviar um evento que será encaminhado para api do Ephem (Odoo). Ele retorna o id do evento, armazenado pela api. Você pode salvar esse id e consultar posteriormente para visualizar o status em GET Consulgar Signal."
+			},
+			"response": []
+		},
+		{
+			"name": "Listar Eventos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api-integracao/v1/eventos?size=10&page=0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api-integracao",
+						"v1",
+						"eventos"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						}
+					]
+				},
+				"description": "Neste endpoint obtemos uma lista de eventos já enviados. ele admite paginação."
+			},
+			"response": []
+		},
+		{
+			"name": "Listar Templates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api-integracao/v1/templates?size=1&page=0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api-integracao",
+						"v1",
+						"templates"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "1"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						}
+					]
+				},
+				"description": "Os templates definem as regras de validação da API de maneira dinâmica. Esse endoint traz uma listagem deles. Porém, na maior parte do tempo ela trará apenas um template."
+			},
+			"response": []
+		},
+		{
+			"name": "Atualizar Template",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"definition\": {\r\n        \"type\": \"object\",\r\n        \"title\": \"Product\",\r\n        \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r\n        \"required\": [\r\n            \"general_hazard_id\",\r\n            \"confidentiality\",\r\n            \"specific_hazard_id\",\r\n            \"state_id\",\r\n            \"signal_type\",\r\n            \"report_date\",\r\n            \"incident_date\"\r\n        ],\r\n        \"properties\": {\r\n            \"state_id\": {\r\n                \"type\": \"boolean\"\r\n            },\r\n            \"report_date\": {\r\n                \"type\": \"string\",\r\n                \"format\": \"date\"\r\n            },\r\n            \"signal_type\": {\r\n                \"enum\": [\r\n                    \"opening\"\r\n                ],\r\n                \"type\": \"string\"\r\n            },\r\n            \"incident_date\": {\r\n                \"type\": \"string\",\r\n                \"format\": \"date\"\r\n            },\r\n            \"confidentiality\": {\r\n                \"enum\": [\r\n                    \"pheoc\", \"ministries\"\r\n                ],\r\n                \"type\": \"string\"\r\n            },\r\n            \"general_hazard_id\": {\r\n                \"type\": \"integer\"\r\n            },\r\n            \"specific_hazard_id\": {\r\n                \"type\": \"integer\"\r\n            }\r\n        },\r\n        \"description\": \"Esquema que representa um'signal'do Ephem(Odoo)\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api-integracao/v1/templates/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api-integracao",
+						"v1",
+						"templates",
+						"1"
+					]
+				},
+				"description": "Neste exemplo, podemos ajustar a definição do schema de validação dos signals recebidos."
+			},
+			"response": []
+		},
+		{
+			"name": "Listar Signals de Um Evento",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api-integracao/v1/eventos/6/signals",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api-integracao",
+						"v1",
+						"eventos",
+						"6",
+						"signals"
+					]
+				},
+				"description": "Aqui obtemos uma lista de signals de determinado evento. Normalmente a lista conterá apenas um elemento."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const moment = require('moment');",
+					"pm.globals.set(\"today\", moment().format(\"YYYY-MM-DD\"));"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,63 @@
+{
+  "type": "object",
+  "title": "Product",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "required": [
+    "general_hazard_id",
+    "confidentiality",
+    "specific_hazard_id",
+    "country_id",
+    "state_id",
+    "district_ids",
+    "signal_type",
+    "report_date",
+    "incident_date"
+  ],
+  "properties": {
+    "state_id": {
+      "type": "integer"
+    },
+    "country_id": {
+      "type": "integer"
+    },
+    "report_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "signal_type": {
+      "enum": [
+        "opening",
+        "update",
+        "related"
+      ],
+      "type": "string"
+    },
+    "district_ids": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "incident_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "confidentiality": {
+      "enum": [
+        "leadership",
+        "pheoc",
+        "ministries",
+        "partners",
+        "everyone"
+      ],
+      "type": "string"
+    },
+    "general_hazard_id": {
+      "type": "integer"
+    },
+    "specific_hazard_id": {
+      "type": "integer"
+    }
+  },
+  "description": "Esquema que representa um'signal'do Ephem(Odoo)"
+}

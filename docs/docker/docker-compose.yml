@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  integracaodb:
+    build: db
+    container_name: integracao-db
+    volumes:
+      - integracao-volume:/var/lib/postgresql/data
+    networks:
+      - integracao-network
+    env_file:
+      - db/.env
+    ports:
+      - '5432:5432'
+
+networks:
+  integracao-network:
+    ipam:
+      driver: default
+volumes:
+  integracao-volume:

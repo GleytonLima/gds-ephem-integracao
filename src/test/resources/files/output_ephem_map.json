@@ -1,0 +1,14 @@
+{
+  "general_hazard_id": 0,
+  "confidentiality": "everyone",
+  "specific_hazard_id": 0,
+  "state_id": 0,
+  "country_id": 0,
+  "district_ids": [
+    0,
+    0
+  ],
+  "signal_type": "opening",
+  "report_date": "2023-08-22",
+  "incident_date": "2023-08-22"
+}
