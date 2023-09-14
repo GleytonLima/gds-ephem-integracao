@@ -39,13 +39,15 @@ public class EphemModelsController {
                                         @RequestParam(value = "filter_name", required = false) String filterName,
                                         @RequestParam(value = "filter_value", required = false) String filterValue,
                                         @RequestParam(value = "filter_comparator", required = false) String filterComparator,
-                                        @RequestParam(value = "size", required = false) Integer size) {
+                                        @RequestParam(value = "size", required = false) Integer size,
+                                        @RequestParam(value = "offset", required = false) Integer offset) {
         Locale locale = LocaleContextHolder.getLocale();
         log.info("Locale request {}", locale);
         final var paramters = EphemParameters.builder()
                 .nomeModelo(modelId)
                 .contextLang(locale.toString())
                 .size(size)
+                .offset(offset)
                 .fields(emptyList())
                 .build();
         if (nonNull(filterName) && nonNull(filterValue) && nonNull(filterComparator)) {

@@ -25,12 +25,12 @@ public class Signal {
 
     public void traduzirStatus() {
         Map<String, String> substituicoes = new HashMap<>();
-        substituicoes.put("verification", "Em verificação");
-        substituicoes.put("raw information", "Inicial");
+        substituicoes.put("verification", "Em análise");
+        substituicoes.put("raw information", "Informado");
         substituicoes.put("discarded", "Descartado");
         substituicoes.put("monitoring", "Em monitoramento");
         substituicoes.put("event", "Evento");
-        substituicoes.put("closed", "Fechado");
+        substituicoes.put("closed", "Encerrado");
         substituicoes.put("invalid", "-");
 
         for (Map.Entry<String, Object> entry : dados.entrySet()) {

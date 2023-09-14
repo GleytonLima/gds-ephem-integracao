@@ -23,7 +23,7 @@ class SignalTest {
         signal.getDados().put("status", new Object[] {0, "verification"});
         signal.traduzirStatus();
         Map<String, Object> translatedData = signal.getDados();
-        assertEquals("Em verificação", ((Object[]) translatedData.get("status"))[1]);
+        assertEquals("Em análise", ((Object[]) translatedData.get("status"))[1]);
     }
 
     @Test
@@ -55,6 +55,6 @@ class SignalTest {
         signal.getDados().put("status", new Object[] {0, "Raw Information"});
         signal.traduzirStatus();
         Map<String, Object> translatedData = signal.getDados();
-        assertEquals("Inicial", ((Object[]) translatedData.get("status"))[1]);
+        assertEquals("Informado", ((Object[]) translatedData.get("status"))[1]);
     }
 }
