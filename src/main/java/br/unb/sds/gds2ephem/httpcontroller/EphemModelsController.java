@@ -13,14 +13,9 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static br.unb.sds.gds2ephem.ephem.EphemAdapter.EQUALS_IGNORECASE_COMPARATOR;
-import static br.unb.sds.gds2ephem.ephem.EphemAdapter.ILIKE_COMPARATOR;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
@@ -40,14 +35,14 @@ public class EphemModelsController {
                                         @RequestParam(value = "filter_value", required = false) String filterValue,
                                         @RequestParam(value = "filter_comparator", required = false) String filterComparator,
                                         @RequestParam(value = "size", required = false) Integer size,
-                                        @RequestParam(value = "offset", required = false) Integer offset) {
+                                        @RequestParam(value = "page", required = false) Integer page) {
         Locale locale = LocaleContextHolder.getLocale();
         log.info("Locale request {}", locale);
         final var paramters = EphemParameters.builder()
                 .nomeModelo(modelId)
                 .contextLang(locale.toString())
                 .size(size)
-                .offset(offset)
+                .offset(Optional.ofNullable(size).orElse(0) * Optional.ofNullable(page).orElse(0))
                 .fields(emptyList())
                 .build();
         if (nonNull(filterName) && nonNull(filterValue) && nonNull(filterComparator)) {
