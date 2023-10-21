@@ -31,6 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
-/docs/docker/db/.env
+/docker/db/.env
 /docs/development-config/.env
-/docs/docker/app/.env
+/docker/app/.env

@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  integracaodb:
+    build: docker/db
+    container_name: integracao-db-development
+    volumes:
+      - integracao-volume:/var/lib/postgresql/data
+    networks:
+      - integracao-network-development
+    env_file:
+      - docker/db/.env
+    ports:
+      - '5432:5432'
+  integracaoapp:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: integracao-app-development
+    networks:
+      - integracao-network-development
+    env_file:
+      - docker/app/.env
+    ports:
+      - '8080:8080'
+
+networks:
+  integracao-network-development:
+    ipam:
+      driver: default
+volumes:
+  integracao-volume:
