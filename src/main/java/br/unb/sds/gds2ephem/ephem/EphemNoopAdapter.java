@@ -1,6 +1,7 @@
 package br.unb.sds.gds2ephem.ephem;
 
 import br.unb.sds.gds2ephem.application.EphemPort;
+import br.unb.sds.gds2ephem.application.model.SinalMensagem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -65,6 +66,12 @@ public class EphemNoopAdapter implements EphemPort {
     }
 
     @Override
+    public Long criarMensagem(Long signalId, Long userId, String mensagem, Long partnerId) {
+        log.info("criarMensagem Noop");
+        return null;
+    }
+
+    @Override
     public HashMap<String, Object> consultarSignalPorId(Long id) {
         return new HashMap<>();
     }
@@ -72,5 +79,11 @@ public class EphemNoopAdapter implements EphemPort {
     @Override
     public void deletarSignalPorId(Long signalId) {
         log.info("deletarSignalPorId Noop");
+    }
+
+    @Override
+    public List<SinalMensagem> listarMensagens(EphemMessageParameters parameters) {
+        log.info("listarMensagens Noop");
+        return emptyList();
     }
 }

@@ -1,7 +1,9 @@
 package br.unb.sds.gds2ephem.ephem;
 
 import br.unb.sds.gds2ephem.application.EphemPort;
+import br.unb.sds.gds2ephem.application.model.SinalMensagem;
 import br.unb.sds.gds2ephem.application.model.exceptions.EphemAuthException;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -10,10 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -59,6 +59,7 @@ public class EphemAdapter implements EphemPort {
 
     @Value("${odoo.apikey}")
     private String odooApiKey;
+    @Getter
     private Integer uid;
 
     @Override
@@ -113,6 +114,10 @@ public class EphemAdapter implements EphemPort {
         if (nonNull(ephemParameters.getId())) {
             filtros = List.of(List.of(
                     List.of("id", "=", ephemParameters.getId())));
+        }
+        if (nonNull(ephemParameters.getIdList())) {
+            filtros = List.of(List.of(
+                    List.of("id", "in", ephemParameters.getIdList())));
         }
         final var parametrosExecucaoRemota = asList(
                 db, uid, odooApiKey,
@@ -204,6 +209,23 @@ public class EphemAdapter implements EphemPort {
     }
 
     @Override
+    @SneakyThrows
+    public Long criarMensagem(Long signalId, Long userId, String mensagem, Long partnerId) {
+        this.autenticar();
+        final var mensagemParametros = Map.ofEntries(
+                entry("body", mensagem),
+                entry("author_id", userId),
+                entry("message_type", "comment"),
+                entry("partner_ids", new Object[]{partnerId}),
+                entry(MODEL_PARAMETER_NAME, EOC_SIGNAL),
+                entry("res_id", signalId)
+        );
+        final var executeParametros = asList(db, uid, odooApiKey, "mail.message", "create", List.of(mensagemParametros));
+
+        return ((Integer) this.xmlRpcClientObject.execute(EXECUTE_KW, executeParametros)).longValue();
+    }
+
+    @Override
     public HashMap<String, Object> consultarSignalPorId(Long id) {
         final var emphemParameters = EphemParameters.builder()
                 .nomeModelo(EOC_SIGNAL)
@@ -226,8 +248,43 @@ public class EphemAdapter implements EphemPort {
         this.xmlRpcClientObject.execute(EXECUTE_KW, executeParametros);
     }
 
+    @Override
+    @SneakyThrows
+    public List<SinalMensagem> listarMensagens(EphemMessageParameters parameters) {
+        this.autenticar();
+        Object[] messageParams = new Object[]{db, uid, odooApiKey,
+                "mail.message", "search_read",
+                new Object[]{new Object[]{
+                        new Object[]{"message_type", "=", "comment"},
+                        new Object[]{"partner_ids", "in", parameters.getPartnerIds()},
+                        new Object[]{"author_id", "in", parameters.getFromIds()},
+                        new Object[]{"res_id", "in", parameters.getSignalIds()}
+                }},
+                new HashMap() {
+                    {
+                        put("fields", EphemMessageParameters.FIELDS);
+                    }
 
-    public Integer getUid() {
-        return uid;
+                    {
+                        put("limit", parameters.getLimit());
+                    }
+
+                    {
+                        put("offset", parameters.getOffset());
+                    }
+
+                    {
+                        put("order", "date DESC");
+                    }
+                }
+        };
+
+        Object[] messages = (Object[]) this.xmlRpcClientObject.execute("execute_kw", messageParams);
+
+        final var listMap = Arrays.stream(messages)
+                .map(object -> (HashMap<String, Object>) object)
+                .collect(Collectors.toList());
+
+        return SinalMensagem.fromListOfMaps(listMap);
     }
 }

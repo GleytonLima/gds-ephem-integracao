@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Local Environment - Ephem Hom - Postgres DB" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="gds2ephem" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="br.unb.sds.gds2ephem.Gds2ephemApplication" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=localhomol" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="br.unb.sds.gds2ephem.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

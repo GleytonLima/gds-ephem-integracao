@@ -3,6 +3,8 @@ package br.unb.sds.gds2ephem.application;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
 import br.unb.sds.gds2ephem.application.model.QEventoIntegracao;
 import com.querydsl.core.types.dsl.StringPath;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -31,4 +33,6 @@ public interface EventoIntegracaoRepository extends PagingAndSortingRepository<E
     default void customize(QuerydslBindings bindings, QEventoIntegracao user) {
         bindings.bind(String.class).first((StringPath path, String value) -> path.containsIgnoreCase(value));
     }
+
+    Page<EventoIntegracao> findByUserId(Pageable pageable, Long userId);
 }
