@@ -1,5 +1,6 @@
 package br.unb.sds.gds2ephem.httpcontroller;
 
+import br.unb.sds.gds2ephem.application.ConfiguracaoSistemaRepository;
 import br.unb.sds.gds2ephem.application.EphemPort;
 import br.unb.sds.gds2ephem.application.EventoIntegracaoRepository;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
@@ -40,6 +41,8 @@ class EphemEventosSignalsControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private EventoIntegracaoRepository eventoIntegracaoRepository;
+    @MockBean
+    private ConfiguracaoSistemaRepository configuracaoSistemaRepository;
     @MockBean
     private EphemPort ephemPort;
 
