@@ -36,7 +36,7 @@ class EphemMapperTest {
     }
 
     @Test
-    @DisplayName("Deve mapear com scuesso")
+    @DisplayName("Deve mapear com sucesso")
     void mapearData() throws IOException {
         final var inputEphemMapStream = EphemMapperTest.class.getResourceAsStream("/files/input_ephem_map.json");
         final var inputEventoIntegracaoStream = EphemMapperTest.class.getResourceAsStream("/files/input_evento_integracao_data.json");
@@ -61,7 +61,7 @@ class EphemMapperTest {
     }
 
     @Test
-    @DisplayName("Deve mapear com scuesso, cenario mais completo")
+    @DisplayName("Deve mapear com sucesso, cenario mais completo")
     void mapearData2() throws IOException {
         final var inputEphemMapStream = EphemMapperTest.class.getResourceAsStream("/files/input_ephem_map_completo.json");
         final var inputEventoIntegracaoStream = EphemMapperTest.class.getResourceAsStream("/files/input_evento_integracao_data.json");
@@ -86,7 +86,7 @@ class EphemMapperTest {
     }
 
     @Test
-    @DisplayName("Deve mapear com scuesso, cenario incompleto")
+    @DisplayName("Deve mapear com sucesso, cenario incompleto")
     void mapearData3() throws IOException {
         final var inputEphemMapStream = EphemMapperTest.class.getResourceAsStream("/files/input_ephem_map.json");
         final var inputEventoIntegracaoStream = EphemMapperTest.class.getResourceAsStream("/files/input_evento_integracao_sem_geo.json");
@@ -111,7 +111,7 @@ class EphemMapperTest {
     }
 
     @Test
-    @DisplayName("Deve mapear com scuesso, cenario incompleto com model array")
+    @DisplayName("Deve mapear com sucesso, cenario incompleto com model array")
     void mapearData4() throws IOException {
         final var inputEphemMapStream = EphemMapperTest.class.getResourceAsStream("/files/input_ephem_map_model_array.json");
         final var inputEventoIntegracaoStream = EphemMapperTest.class.getResourceAsStream("/files/input_evento_integracao_sem_geo.json");

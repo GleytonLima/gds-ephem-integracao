@@ -1,5 +1,7 @@
 package br.unb.sds.gds2ephem.application;
 
+import br.unb.sds.gds2ephem.application.model.SinalMensagem;
+import br.unb.sds.gds2ephem.ephem.EphemMessageParameters;
 import br.unb.sds.gds2ephem.ephem.EphemParameters;
 
 import java.util.HashMap;
@@ -23,7 +25,11 @@ public interface EphemPort {
 
     Long criarMensagem(Long signalId, String mensagem);
 
+    Long criarMensagem(Long signalId, Long userId, String mensagem, Long partnerId);
+
     HashMap<String, Object> consultarSignalPorId(Long id);
 
     void deletarSignalPorId(Long signalId);
+
+    List<SinalMensagem> listarMensagens(EphemMessageParameters ephemMessageParameters);
 }

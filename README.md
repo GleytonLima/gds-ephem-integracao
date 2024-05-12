@@ -56,10 +56,10 @@ Do the same for the [docs/docker/db folder](docker/db). Create the `.env` file f
 
 ### Launch the Postgres Docker Container
 
-To run the database locally, navigate to the [docker folder](docker) and execute:
+To run the database locally, execute the following command:
 
 ```bash
-docker-compose -f docker-compose-db-only up -d
+docker-compose -f docker-compose-db-only.yml up -d
 ```
 
 Clone this project and open [Intellij IDE](https://www.jetbrains.com/idea/). The project comes with a pre-configured

@@ -66,4 +66,5 @@ public class EphemParameters {
     private Integer offset;
     private Integer size;
     private String sort;
+    Object[] idList;
 }

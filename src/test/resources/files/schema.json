@@ -8,7 +8,6 @@
     "specific_hazard_id",
     "country_id",
     "state_id",
-    "district_ids",
     "signal_type",
     "report_date",
     "incident_date"

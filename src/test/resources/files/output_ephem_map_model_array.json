@@ -3,9 +3,6 @@
   "country_id": 0,
   "report_date": "2023-08-22",
   "signal_type": "opening",
-  "district_ids": [
-    0
-  ],
   "incident_date": "2023-08-22",
   "confidentiality": "everyone",
   "general_hazard_id": 0,
