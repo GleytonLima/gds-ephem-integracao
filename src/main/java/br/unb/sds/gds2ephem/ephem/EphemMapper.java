@@ -98,8 +98,21 @@ public class EphemMapper {
                     valorCorrespondente = new IntNode(idRetornado);
                 }
             }
-
-            inputAlterado.set(variavel, valorCorrespondente);
+            // vamos checar se valorCorresponde é um ArrayNode. Se For um ArrayNode e seu conteudo for vazio, nulo ou só contem IntNode com valor 0, então não vamos adicionar ao inputAlterado
+            if (valorCorrespondente.getNodeType() == JsonNodeType.ARRAY) {
+                boolean isEmpty = true;
+                for (JsonNode node : valorCorrespondente) {
+                    if (node.getNodeType() == JsonNodeType.OBJECT || (node.getNodeType() == JsonNodeType.NUMBER && node.asInt() != 0)) {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                if (!isEmpty) {
+                    inputAlterado.set(variavel, valorCorrespondente);
+                }
+            } else {
+                inputAlterado.set(variavel, valorCorrespondente);
+            }
         });
         log.info("input alterado {}", inputAlterado);
         return inputAlterado;
