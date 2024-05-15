@@ -7,6 +7,7 @@ import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
 import br.unb.sds.gds2ephem.ephem.EphemParameters;
 import br.unb.sds.gds2ephem.httpcontroller.dto.Signal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
@@ -34,7 +35,7 @@ public class EphemSignalsController {
     private final EventoIntegracaoRepository eventoIntegracaoRepository;
 
     @GetMapping
-    public CollectionModel<?> getSignals(@RequestParam("size") Integer size, @RequestParam("page") Integer page, @RequestParam(value = "user_id") Long userId) {
+    public CollectionModel<?> getSignals(@RequestParam("size") Integer size, @RequestParam("page") Integer page, @RequestParam(value = "user_id", required = false) Long userId) {
         final var offset = page * size;
         final var parametersBuilder = EphemParameters.builder()
                 .nomeModelo(SIGNAL_MODEL_NAME)
@@ -42,8 +43,7 @@ public class EphemSignalsController {
                 .sort(MODEL_DEFAULT_SORT)
                 .offset(offset)
                 .size(size);
-
-        final var eventos = eventoIntegracaoRepository.findByUserId(PageRequest.of(page, size), userId);
+        Page<EventoIntegracao> eventos = buscarEventosIntegracao(size, page, userId);
         final var signalIdsArray = eventos.stream()
                 .map(EventoIntegracao::getSignalId)
                 .toArray(Object[]::new);
@@ -71,6 +71,13 @@ public class EphemSignalsController {
 
         final var link = linkTo(Signal.class).withSelfRel();
         return CollectionModel.of(List.of(signals), link);
+    }
+
+    private Page<EventoIntegracao> buscarEventosIntegracao(Integer size, Integer page, Long userId) {
+        if (nonNull(userId)) {
+            return eventoIntegracaoRepository.findByUserId(PageRequest.of(page, size), userId);
+        }
+        return eventoIntegracaoRepository.findAll(PageRequest.of(page, size));
     }
 }
 
