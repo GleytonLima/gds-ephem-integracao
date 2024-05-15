@@ -6,7 +6,8 @@
             <syslogHost>${PAPERTRAIL_HOST}</syslogHost>
             <port>${PAPERTRAIL_PORT}</port>
             <facility>USER</facility>
-            <suffixPattern>gds-integrador %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p})
+            <ident>gds-integrador</ident>
+            <suffixPattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p})
                 %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan}
                 %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}
             </suffixPattern>
