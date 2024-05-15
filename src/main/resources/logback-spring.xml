@@ -1,30 +1,28 @@
 <configuration>
     <springProfile name="prod">
-        <!-- Use shutdownHook so that we can close gracefully and finish the log drain -->
-        <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
-        <appender name="LogzioLogbackAppender" class="io.logz.logback.LogzioLogbackAppender">
-            <token>${LOGZIO_TOKEN}</token>
-            <logzioUrl>https://listener.logz.io</logzioUrl>
-            <logzioType>gds2ephem</logzioType>
-            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-                <level>INFO</level>
-            </filter>
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <appender name="PAPERTRAIL"
+                  class="ch.qos.logback.classic.net.SyslogAppender">
+            <syslogHost>${PAPERTRAIL_HOST}</syslogHost>
+            <port>${PAPERTRAIL_PORT}</port>
+            <facility>USER</facility>
+            <suffixPattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p})
+                %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan}
+                %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}
+            </suffixPattern>
         </appender>
-
-        <root level="debug">
-            <appender-ref ref="LogzioLogbackAppender"/>
-        </root>
-    </springProfile>
-    <springProfile name="!prod">
-        <!-- Use o appender do console para saída no console -->
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-            </encoder>
-        </appender>
-
         <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="PAPERTRAIL"/>
         </root>
     </springProfile>
+    <!-- Use o appender do console para saída no console -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
 </configuration>
