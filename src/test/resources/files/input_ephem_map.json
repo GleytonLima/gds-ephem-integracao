@@ -51,16 +51,17 @@
     "from": [
       "evento_data_ocorrencia"
     ],
-    "default_value": "@today",
-    "type": "date",
-    "from_format": "dd-MM-yyyy"
+    "default_value": "@now",
+    "type": "datetime",
+    "from_format": ["yyyy-MM-dd'T'HH:mm:ssSXXX", "dd-MM-yyyy"]
+
   },
   "incident_date": {
     "from": [
       "evento_data_ocorrencia"
     ],
     "default_value": "@today",
-    "type": "date",
-    "from_format": "dd-MM-yyyy"
+    "type": "datetime",
+    "from_format": ["yyyy-MM-dd'T'HH:mm:ssSXXX", "dd-MM-yyyy"]
   }
 }

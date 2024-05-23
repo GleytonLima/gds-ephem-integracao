@@ -134,4 +134,30 @@ class EphemMapperTest {
 
         assertEquals(outputEphemMap, dataOutput);
     }
+
+
+    @Test
+    @DisplayName("Deve mapear com sucesso, cenario incompleto com model array")
+    void mapearData5() throws IOException {
+        final var inputEphemMapStream = EphemMapperTest.class.getResourceAsStream("/files/input_ephem_map_model_array.json");
+        final var inputEventoIntegracaoStream = EphemMapperTest.class.getResourceAsStream("/files/input_evento_integracao_sem_geo_02.json");
+        final var outputEphemMapStream = EphemMapperTest.class.getResourceAsStream("/files/output_ephem_map_model_array_02.json");
+
+        final var objectMapper = new ObjectMapper();
+
+        final var inputEphemMap = objectMapper.readTree(inputEphemMapStream);
+        final var inputEventoIntegracaoData = objectMapper.readTree(inputEventoIntegracaoStream);
+        final var outputEphemMap = objectMapper.readTree(outputEphemMapStream);
+
+        final var eventoIntegracaoTemplate = new EventoIntegracaoTemplate();
+        eventoIntegracaoTemplate.setInputEphemMap(inputEphemMap);
+
+        final var eventoIntegracao = new EventoIntegracao();
+        eventoIntegracao.setData(inputEventoIntegracaoData);
+        eventoIntegracao.setEventoIntegracaoTemplate(eventoIntegracaoTemplate);
+
+        final var dataOutput = ephemMapper.mapearData(eventoIntegracao);
+
+        assertEquals(outputEphemMap, dataOutput);
+    }
 }

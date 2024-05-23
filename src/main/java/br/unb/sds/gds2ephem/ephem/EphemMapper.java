@@ -11,7 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -75,6 +78,20 @@ public class EphemMapper {
                     String outputDateString = localDate.format(outputFormatter);
                     valorCorrespondente = new TextNode(outputDateString);
                 }
+            } else if ("datetime".equals(type)) {
+                final var fromFormat = variavelInfo.get("from_format");
+                if (fromFormat.isArray()) {
+                    for (JsonNode format : fromFormat) {
+                        try {
+                            valorCorrespondente = extractDateTime(valorCorrespondente, format.asText());
+                            break;
+                        } catch (DateTimeParseException e) {
+                            log.warn("Was not possible to parse date {} with format {}", valorCorrespondente, format.asText());
+                        }
+                    }
+                } else {
+                    valorCorrespondente = extractDateTime(valorCorrespondente, fromFormat.asText());
+                }
             } else if ("string".equals(type)) {
                 valorCorrespondente = new TextNode(valorCorrespondente.asText());
             } else if ("integer".equals(type)) {
@@ -116,6 +133,30 @@ public class EphemMapper {
         });
         log.info("input alterado {}", inputAlterado);
         return inputAlterado;
+    }
+
+    private JsonNode extractDateTime(JsonNode valorCorrespondente, String fromFormat) {
+        if (valorCorrespondente.asText().contains("@now")) {
+            final var outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            valorCorrespondente = new TextNode(LocalDateTime.now(clock).format(outputFormatter));
+        } else {
+            final var outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            try {
+                final var inputFormatter = DateTimeFormatter.ofPattern(fromFormat);
+                final var localDateTime = LocalDateTime.parse(valorCorrespondente.asText(), inputFormatter);
+                final var localDateTimeUTC = localDateTime.atZone(ZoneId.of("America/Manaus")).withZoneSameInstant(ZoneId.of("UTC"));
+                final var outputDateTimeString = localDateTimeUTC.format(outputFormatter);
+                valorCorrespondente = new TextNode(outputDateTimeString);
+            } catch (DateTimeParseException e) {
+                final var inputFormatter = DateTimeFormatter.ofPattern(fromFormat);
+                final var localDate = LocalDate.parse(valorCorrespondente.asText(), inputFormatter);
+                final var startOfDay = localDate.atStartOfDay().plusHours(4);
+                final var startOfDayUTC = startOfDay.plusSeconds(clock.getZone().getRules().getOffset(startOfDay).getTotalSeconds());
+                final var outputDateTimeString = startOfDayUTC.format(outputFormatter);
+                valorCorrespondente = new TextNode(outputDateTimeString);
+            }
+        }
+        return valorCorrespondente;
     }
 
     private Integer buscarModels(JsonNode variavelInfo, JsonNode modelId, JsonNode filterName, JsonNode element) {

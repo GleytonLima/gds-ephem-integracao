@@ -21,9 +21,12 @@
     "from": [
       "evento_data_ocorrencia"
     ],
-    "type": "date",
-    "from_format": "dd-MM-yyyy",
-    "default_value": "@today"
+    "type": "datetime",
+    "from_format": [
+      "yyyy-MM-dd'T'HH:mm:ssSXXX",
+      "dd-MM-yyyy"
+    ],
+    "default_value": "@now"
   },
   "signal_type": {
     "from": [],
@@ -43,9 +46,12 @@
     "from": [
       "evento_data_ocorrencia"
     ],
-    "type": "date",
-    "from_format": "dd-MM-yyyy",
-    "default_value": "@today"
+    "type": "datetime",
+    "from_format": [
+      "yyyy-MM-dd'T'HH:mm:ssSXXX",
+      "dd-MM-yyyy"
+    ],
+    "default_value": "@now"
   },
   "confidentiality": {
     "from": [],
