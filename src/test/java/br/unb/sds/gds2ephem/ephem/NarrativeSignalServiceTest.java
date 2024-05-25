@@ -63,14 +63,14 @@ class NarrativeSignalServiceTest {
         String formattedInstant = formatter.format(evento.getCreatedAt());
 
         String result = narrativeSignalService.buildHeaderMessage(evento);
-        String expected = "<br><p>Reporte pelo App GDS em " + HtmlUtils.htmlEscape(formattedInstant) + " de <a href=\"" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "\">" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "</a></p>";
+        String expected = "<br><p>Reporte pelo App GDS em " + HtmlUtils.htmlEscape(formattedInstant) + ", horário de Brasília (email: <a href=\"" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "\">" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "</a>; telefone: n&atilde;o informado)</p>";
         assertEquals(expected, result);
     }
 
     @Test
     void testBuildNarrativeDescriptionWithEmptyMap() {
         String result = narrativeSignalService.buildNarrativeDescription(evento);
-        String expected = "<br><p>Reporte pelo App GDS em " + HtmlUtils.htmlEscape(getFormattedInstant(evento.getCreatedAt())) + " de <a href=\"" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "\">" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "</a></p>";
+        String expected = "<br><p>Reporte pelo App GDS em " + HtmlUtils.htmlEscape(getFormattedInstant(evento.getCreatedAt())) + ", horário de Brasília (email: <a href=\"" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "\">" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "</a>; telefone: n&atilde;o informado)</p>";
         assertEquals(expected, result);
     }
 
@@ -81,7 +81,7 @@ class NarrativeSignalServiceTest {
         evento.setAditionalData(objectMapper.valueToTree(dataMap));
 
         String result = narrativeSignalService.buildNarrativeDescription(evento);
-        String expected = "<br><p>Reporte pelo App GDS em " + HtmlUtils.htmlEscape(getFormattedInstant(evento.getCreatedAt())) + " de <a href=\"" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "\">" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "</a></p><table class=\"table table-bordered o_table\"><tr><td><p>Chave</p></td><td><p>Valor</p></td></tr></table>";
+        String expected = "<br><p>Reporte pelo App GDS em " + HtmlUtils.htmlEscape(getFormattedInstant(evento.getCreatedAt())) + ", horário de Brasília (email: <a href=\"" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "\">" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "</a>; telefone: n&atilde;o informado)</p><table class=\"table table-bordered o_table\"><tr><td><p>Chave</p></td><td><p>Valor</p></td></tr></table>";
         assertEquals(expected, result);
     }
 
@@ -93,7 +93,7 @@ class NarrativeSignalServiceTest {
         evento.setAditionalData(objectMapper.valueToTree(dataMap));
 
         String result = narrativeSignalService.buildNarrativeDescription(evento);
-        String expected = "<br><p>Reporte pelo App GDS em " + HtmlUtils.htmlEscape(getFormattedInstant(evento.getCreatedAt())) + " de <a href=\"" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "\">" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "</a></p><table class=\"table table-bordered o_table\"><tr><td><p>Chave1</p></td><td><p>Valor1</p></td></tr><tr><td><p>Chave2</p></td><td><p>Valor2</p></td></tr></table>";
+        String expected = "<br><p>Reporte pelo App GDS em " + HtmlUtils.htmlEscape(getFormattedInstant(evento.getCreatedAt())) + ", horário de Brasília (email: <a href=\"" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "\">" + HtmlUtils.htmlEscape(evento.getUserEmail()) + "</a>; telefone: n&atilde;o informado)</p><table class=\"table table-bordered o_table\"><tr><td><p>Chave1</p></td><td><p>Valor1</p></td></tr><tr><td><p>Chave2</p></td><td><p>Valor2</p></td></tr></table>";
         assertEquals(expected, result);
     }
 

@@ -1,5 +1,6 @@
 package br.unb.sds.gds2ephem.ephem;
 
+import br.unb.sds.gds2ephem.application.ConfiguracaoSistemaRepository;
 import br.unb.sds.gds2ephem.application.model.exceptions.EphemAuthException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +14,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import static br.unb.sds.gds2ephem.EventoIntegracaoObjectMother.createIntegrationEvent;
 import static br.unb.sds.gds2ephem.ephem.EphemAdapter.CONTEXT_LANG_KEY;
 import static br.unb.sds.gds2ephem.ephem.EphemAdapter.CONTEXT_PARAMETER_NAME;
 import static java.util.Collections.emptyList;
@@ -36,9 +37,12 @@ class EphemAdapterTest {
 
     private EphemAdapter adapter;
 
+    @Mock
+    private ConfiguracaoSistemaRepository configuracaoSistemaRepository;
+
     @BeforeEach
     void setUp() {
-        adapter = new EphemAdapter(objectClient, commonClient);
+        adapter = new EphemAdapter(objectClient, commonClient, configuracaoSistemaRepository);
     }
 
     @Test
@@ -416,7 +420,7 @@ class EphemAdapterTest {
         Map<String, Object> dados = Map.of("chave", "valor");
         when(objectClient.execute(anyString(), anyList())).thenReturn(1);
 
-        adapter.criarSignal(dados);
+        adapter.criarSignal(createIntegrationEvent(), dados);
 
         verify(objectClient, times(1)).execute(
                 eq(EphemAdapter.EXECUTE_KW),
@@ -440,7 +444,7 @@ class EphemAdapterTest {
         Map<String, Object> dados = Map.of("chave", "valor");
         when(objectClient.execute(anyString(), anyList())).thenReturn(1).thenThrow(new RuntimeException());
 
-        adapter.criarSignal(dados);
+        adapter.criarSignal(createIntegrationEvent(), dados);
 
         verify(objectClient, times(1)).execute(
                 eq(EphemAdapter.EXECUTE_KW),
@@ -464,7 +468,7 @@ class EphemAdapterTest {
         Map<String, Object> dados = Map.of("chave", "valor");
         doThrow(new RuntimeException()).when(objectClient).execute(anyString(), anyList());
 
-        assertThrows(RuntimeException.class, () -> adapter.criarSignal(dados));
+        assertThrows(RuntimeException.class, () -> adapter.criarSignal(createIntegrationEvent(), dados));
 
         verify(objectClient, times(1)).execute(
                 eq(EphemAdapter.EXECUTE_KW),

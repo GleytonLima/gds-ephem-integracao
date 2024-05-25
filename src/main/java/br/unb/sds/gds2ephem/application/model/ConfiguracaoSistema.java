@@ -19,5 +19,6 @@ public class ConfiguracaoSistema {
 
     private Long ephemAdminUserId;
     private Long ephemGdsUserId;
+    private Long communityLeadersSourceId;
     private String ephemAdminApiKey;
 }

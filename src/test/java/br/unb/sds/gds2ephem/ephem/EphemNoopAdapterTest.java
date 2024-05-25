@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static br.unb.sds.gds2ephem.EventoIntegracaoObjectMother.createIntegrationEvent;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -65,7 +66,7 @@ class EphemNoopAdapterTest {
         Map<String, Object> dados = new HashMap<>();
         dados.put("chave", "valor");
 
-        assertDoesNotThrow(() -> adapter.criarSignal(dados));
+        assertDoesNotThrow(() -> adapter.criarSignal(createIntegrationEvent(), dados));
     }
 
     @Test

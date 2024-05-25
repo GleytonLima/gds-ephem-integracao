@@ -62,7 +62,7 @@ class EphemSchedulerTest {
         verify(transactionTemplate, times(1)).execute(any());
         verify(eventoIntegracaoRepository, times(1))
                 .findTop10ByStatusOrderByCreatedAtAsc(EventoIntegracaoStatus.CRIADO.name());
-        verify(ephemPort, never()).criarSignal(any());
+        verify(ephemPort, never()).criarSignal(any(), any());
     }
 
     @SneakyThrows
@@ -79,7 +79,7 @@ class EphemSchedulerTest {
 
         when(eventoIntegracaoRepository.findTop10ByStatusOrderByCreatedAtAsc(EventoIntegracaoStatus.CRIADO.name()))
                 .thenReturn(eventos).thenReturn(Collections.emptyList());
-        when(ephemPort.criarSignal(any())).thenReturn(123L);
+        when(ephemPort.criarSignal(any(), any())).thenReturn(123L);
         when(transactionTemplate.execute(any())).thenAnswer(invocation -> invocation.<TransactionCallback<Boolean>>getArgument(0).doInTransaction(_transactionStatus));
 
         scheduler.execute();
@@ -87,7 +87,7 @@ class EphemSchedulerTest {
         verify(transactionTemplate, times(2)).execute(any());
         verify(eventoIntegracaoRepository, times(2))
                 .findTop10ByStatusOrderByCreatedAtAsc(EventoIntegracaoStatus.CRIADO.name());
-        verify(ephemPort, times(2)).criarSignal(any());
+        verify(ephemPort, times(2)).criarSignal(any(), any());
         verify(eventoIntegracaoRepository, times(2)).save(any(EventoIntegracao.class));
     }
 
@@ -105,7 +105,7 @@ class EphemSchedulerTest {
 
         when(eventoIntegracaoRepository.findTop10ByStatusOrderByCreatedAtAsc(EventoIntegracaoStatus.CRIADO.name()))
                 .thenReturn(eventos).thenReturn(Collections.emptyList());
-        when(ephemPort.criarSignal(any())).thenThrow(new RuntimeException("Erro Qualquer"));
+        when(ephemPort.criarSignal(any(), any())).thenThrow(new RuntimeException("Erro Qualquer"));
         when(transactionTemplate.execute(any())).thenAnswer(invocation -> invocation.<TransactionCallback<Boolean>>getArgument(0).doInTransaction(_transactionStatus));
 
         scheduler.execute();
@@ -113,7 +113,7 @@ class EphemSchedulerTest {
         verify(transactionTemplate, times(2)).execute(any());
         verify(eventoIntegracaoRepository, times(2))
                 .findTop10ByStatusOrderByCreatedAtAsc(EventoIntegracaoStatus.CRIADO.name());
-        verify(ephemPort, times(2)).criarSignal(any());
+        verify(ephemPort, times(2)).criarSignal(any(), any());
         verify(eventoIntegracaoRepository, times(2)).save(any(EventoIntegracao.class));
     }
 
@@ -132,7 +132,7 @@ class EphemSchedulerTest {
 
         when(eventoIntegracaoRepository.findTop10ByStatusOrderByCreatedAtAsc(EventoIntegracaoStatus.CRIADO.name()))
                 .thenReturn(eventos);
-        when(ephemPort.criarSignal(any())).thenReturn(123L);
+        when(ephemPort.criarSignal(any(), any())).thenReturn(123L);
         when(transactionTemplate.execute(any())).thenAnswer(invocation -> invocation.<TransactionCallback<Boolean>>getArgument(0).doInTransaction(_transactionStatus));
 
         scheduler.execute();
@@ -140,7 +140,7 @@ class EphemSchedulerTest {
         verify(transactionTemplate, times(5)).execute(any());
         verify(eventoIntegracaoRepository, times(5))
                 .findTop10ByStatusOrderByCreatedAtAsc(EventoIntegracaoStatus.CRIADO.name());
-        verify(ephemPort, times(10)).criarSignal(any());
+        verify(ephemPort, times(10)).criarSignal(any(), any());
         verify(eventoIntegracaoRepository, times(10)).save(any(EventoIntegracao.class));
     }
 

@@ -63,7 +63,7 @@ public class EphemScheduler {
                         });
                         dadosRequest.put("description", narrativeSignalService.buildNarrativeDescription(eventoIntegracao));
 
-                        final var signalId = ephemPort.criarSignal(dadosRequest);
+                        final var signalId = ephemPort.criarSignal(eventoIntegracao, dadosRequest);
 
                         eventoIntegracao.setSignalId(signalId);
                         eventoIntegracao.setStatus(EventoIntegracaoStatus.PROCESSADO.name());

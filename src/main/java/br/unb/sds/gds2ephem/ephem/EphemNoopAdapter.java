@@ -1,6 +1,8 @@
 package br.unb.sds.gds2ephem.ephem;
 
 import br.unb.sds.gds2ephem.application.EphemPort;
+import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
+import br.unb.sds.gds2ephem.application.model.SignalSource;
 import br.unb.sds.gds2ephem.application.model.SinalMensagem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -55,13 +57,19 @@ public class EphemNoopAdapter implements EphemPort {
         return emptyList();
     }
 
-    public Long criarSignal(final Map<String, Object> dados) {
+    public Long criarSignal(final EventoIntegracao eventoIntegracao, final Map<String, Object> dados) {
         log.info("criarSignal Noop: {}", dados);
         return 1L;
     }
 
     public Long criarMensagem(final Long signalId, final String mensagem) {
         log.info("criarMensagem Noop");
+        return 1L;
+    }
+
+    @Override
+    public Long addSource(SignalSource signalSource) {
+        log.info("addSource Noop");
         return 1L;
     }
 
