@@ -1,6 +1,10 @@
 package br.unb.sds.gds2ephem.ephem;
 
+import br.unb.sds.gds2ephem.application.ConfiguracaoSistemaRepository;
 import br.unb.sds.gds2ephem.application.EphemPort;
+import br.unb.sds.gds2ephem.application.model.ConfiguracaoSistema;
+import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
+import br.unb.sds.gds2ephem.application.model.SignalSource;
 import br.unb.sds.gds2ephem.application.model.SinalMensagem;
 import br.unb.sds.gds2ephem.application.model.exceptions.EphemAuthException;
 import lombok.Getter;
@@ -46,9 +50,14 @@ public class EphemAdapter implements EphemPort {
     private final XmlRpcClient xmlRpcClientObject;
     private final XmlRpcClient xmlRpcClientCommon;
 
-    public EphemAdapter(@Qualifier("xmlRpcClientObject") XmlRpcClient xmlRpcClientObject, @Qualifier("xmlRpcClientCommon") XmlRpcClient xmlRpcClientCommon) {
+    private final ConfiguracaoSistemaRepository configuracaoSistemaRepository;
+
+    public EphemAdapter(@Qualifier("xmlRpcClientObject") XmlRpcClient xmlRpcClientObject,
+                        @Qualifier("xmlRpcClientCommon") XmlRpcClient xmlRpcClientCommon,
+                        ConfiguracaoSistemaRepository configuracaoSistemaRepository) {
         this.xmlRpcClientObject = xmlRpcClientObject;
         this.xmlRpcClientCommon = xmlRpcClientCommon;
+        this.configuracaoSistemaRepository = configuracaoSistemaRepository;
     }
 
     @Value("${odoo.db}")
@@ -177,7 +186,7 @@ public class EphemAdapter implements EphemPort {
 
     @Override
     @SneakyThrows
-    public Long criarSignal(final Map<String, Object> dados) {
+    public Long criarSignal(final EventoIntegracao eventoIntegracao, final Map<String, Object> dados) {
         this.autenticar();
         final var parametros = asList(db, uid, odooApiKey, EOC_SIGNAL, "create", List.of(dados));
         final var signalId = ((Integer) this.xmlRpcClientObject.execute(EXECUTE_KW, parametros)).longValue();
@@ -188,6 +197,19 @@ public class EphemAdapter implements EphemPort {
             log.info("mensagem padrao gerada com sucesso com o id {}", mensagemCriadaId);
         } catch (Exception e) {
             log.error("erro ao criar mensagem padrao. excecao nao sera relancada para que o signal nao seja criado novamente", e);
+        }
+        try {
+            final var configuracaoSistema = this.configuracaoSistemaRepository.findById(ConfiguracaoSistema.DEFAULT_SYSTEM_CONFIG_ID).orElseThrow();
+            final var signalSource = SignalSource.builder()
+                    .signalId(signalId)
+                    .sourceType(configuracaoSistema.getCommunityLeadersSourceId())
+                    .sourceName(eventoIntegracao.getUserName())
+                    .sourceAddress(eventoIntegracao.getUserPhone())
+                    .build();
+            final var sourceId = addSource(signalSource);
+            log.info("source criado com sucesso com o id {}", sourceId);
+        } catch (Exception e) {
+            log.error("erro ao criar source. excecao nao sera relancada para que o signal nao seja criado novamente", e);
         }
         return signalId;
     }
@@ -221,6 +243,32 @@ public class EphemAdapter implements EphemPort {
                 entry("res_id", signalId)
         );
         final var executeParametros = asList(db, uid, odooApiKey, "mail.message", "create", List.of(mensagemParametros));
+
+        return ((Integer) this.xmlRpcClientObject.execute(EXECUTE_KW, executeParametros)).longValue();
+    }
+
+    @Override
+    @SneakyThrows
+    public Long addSource(SignalSource signalSource) {
+        if (signalSource == null) {
+            throw new IllegalArgumentException("SignalSource cannot be null");
+        }
+
+        this.autenticar();
+
+        final var signalId = signalSource.getSignalId() != null ? signalSource.getSignalId() : 0L;
+        final var sourceType = signalSource.getSourceType() != null ? signalSource.getSourceType() : "";
+        final var sourceName = signalSource.getSourceName() != null ? signalSource.getSourceName() : "";
+        final var sourceAddress = signalSource.getSourceAddress() != null ? signalSource.getSourceAddress() : "";
+
+        final var sourceParametros = Map.ofEntries(
+                entry("signal_id", signalId),
+                entry("source_type", sourceType),
+                entry("source_name", sourceName),
+                entry("source_address", sourceAddress)
+        );
+
+        final var executeParametros = asList(db, uid, odooApiKey, "eoc.signal.sources", "create", List.of(sourceParametros));
 
         return ((Integer) this.xmlRpcClientObject.execute(EXECUTE_KW, executeParametros)).longValue();
     }

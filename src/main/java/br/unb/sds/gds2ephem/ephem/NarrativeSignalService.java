@@ -27,16 +27,30 @@ public class NarrativeSignalService {
 
         final var stringBuilder = new StringBuilder();
 
+        final var userName = eventoIntegracao.getUserName() != null ? eventoIntegracao.getUserName() : "";
+        final var userEmail = eventoIntegracao.getUserEmail() != null ? eventoIntegracao.getUserEmail() : "não informado";
+        final var userPhone = eventoIntegracao.getUserPhone() != null ? eventoIntegracao.getUserPhone() : "não informado";
+
         stringBuilder.append("<br>")
                 .append("<p>")
                 .append("Reporte pelo App GDS em ")
                 .append(HtmlUtils.htmlEscape(formattedInstant))
-                .append(" de ")
+                .append(", horário de Brasília");
+
+        if (!userName.isEmpty()) {
+            stringBuilder.append(", de ")
+                    .append(userName);
+        }
+
+        stringBuilder.append(" (email: ")
                 .append("<a href=\"")
-                .append(HtmlUtils.htmlEscape(eventoIntegracao.getUserEmail()))
+                .append(HtmlUtils.htmlEscape(userEmail))
                 .append("\">")
-                .append(HtmlUtils.htmlEscape(eventoIntegracao.getUserEmail()))
+                .append(HtmlUtils.htmlEscape(userEmail))
                 .append("</a>")
+                .append("; telefone: ")
+                .append(HtmlUtils.htmlEscape(userPhone))
+                .append(")")
                 .append("</p>");
 
         return stringBuilder.toString();

@@ -1,5 +1,7 @@
 package br.unb.sds.gds2ephem.application;
 
+import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
+import br.unb.sds.gds2ephem.application.model.SignalSource;
 import br.unb.sds.gds2ephem.application.model.SinalMensagem;
 import br.unb.sds.gds2ephem.ephem.EphemMessageParameters;
 import br.unb.sds.gds2ephem.ephem.EphemParameters;
@@ -21,9 +23,11 @@ public interface EphemPort {
 
     List<Object> listarCamposModelo(String modeloNome, String atributoNome);
 
-    Long criarSignal(Map<String, Object> dados);
+    Long criarSignal(EventoIntegracao eventoIntegracao, Map<String, Object> dados);
 
     Long criarMensagem(Long signalId, String mensagem);
+
+    Long addSource(SignalSource signalSource);
 
     Long criarMensagem(Long signalId, Long userId, String mensagem, Long partnerId);
 

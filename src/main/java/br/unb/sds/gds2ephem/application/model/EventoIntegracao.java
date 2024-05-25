@@ -3,8 +3,6 @@ package br.unb.sds.gds2ephem.application.model;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.Data;
 import org.hibernate.annotations.Type;
@@ -15,8 +13,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Entity
@@ -44,6 +40,8 @@ public class EventoIntegracao {
     private Long eventSourceLocationId;
     private Long userId;
     private String userEmail;
+    private String userName;
+    private String userPhone;
     @CreatedDate
     private Instant createdAt;
     @LastModifiedDate

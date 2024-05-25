@@ -1,11 +1,14 @@
 package br.unb.sds.gds2ephem.ephem;
 
+import br.unb.sds.gds2ephem.application.ConfiguracaoSistemaRepository;
+import br.unb.sds.gds2ephem.application.model.SignalSource;
 import br.unb.sds.gds2ephem.configs.XmlRpcClientBeans;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -14,19 +17,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 
+import static br.unb.sds.gds2ephem.EventoIntegracaoObjectMother.createIntegrationEvent;
 import static br.unb.sds.gds2ephem.ephem.EphemParameters.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class EphemAdapterIntegrationTest {
     private EphemAdapter ephemAdapter;
+    @Mock
+    private ConfiguracaoSistemaRepository configuracaoSistemaRepository;
 
     @SneakyThrows
     @BeforeEach
     void setUp() {
         final var client = new XmlRpcClientBeans();
         ReflectionTestUtils.setField(client, "url", System.getenv("ODOO_URL"));
-        ephemAdapter = new EphemAdapter(client.gerarClientObject(), client.gerarClientCommon());
+        ephemAdapter = new EphemAdapter(client.gerarClientObject(), client.gerarClientCommon(), configuracaoSistemaRepository);
     }
 
     @SneakyThrows
@@ -46,7 +52,24 @@ class EphemAdapterIntegrationTest {
             put("report_date", LocalDate.now().format(DateTimeFormatter.ISO_DATE));
             put("incident_date", LocalDate.now().format(DateTimeFormatter.ISO_DATE));
         }};
-        final var id = ephemAdapter.criarSignal(dados);
+        final var id = ephemAdapter.criarSignal(createIntegrationEvent(), dados);
+    }
+
+    @SneakyThrows
+    @Test
+    @Disabled
+    void addSource() {
+        ReflectionTestUtils.setField(ephemAdapter, "uid", 2);
+        ReflectionTestUtils.setField(ephemAdapter, "db", "unbhom");
+        ReflectionTestUtils.setField(ephemAdapter, "odooApiKey", "e530771d32bc1a11ce0cdc8fc10b291dca8f5429");
+
+        final var signalSource = new SignalSource();
+        signalSource.setSignalId(33L);
+        signalSource.setSourceName("Teste");
+        signalSource.setSourceAddress("999999999");
+        signalSource.setSourceType(1L);
+
+        final var id = ephemAdapter.addSource(signalSource);
     }
 
     @SneakyThrows
