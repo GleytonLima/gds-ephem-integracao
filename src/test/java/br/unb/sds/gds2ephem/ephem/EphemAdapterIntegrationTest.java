@@ -66,7 +66,7 @@ class EphemAdapterIntegrationTest {
         final var signalSource = new SignalSource();
         signalSource.setSignalId(33L);
         signalSource.setSourceName("Teste");
-        signalSource.setSourceAddress("999999999");
+        signalSource.setSourcePhone("999999999");
         signalSource.setSourceType(1L);
 
         final var id = ephemAdapter.addSource(signalSource);

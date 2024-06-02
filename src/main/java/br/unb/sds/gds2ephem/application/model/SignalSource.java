@@ -22,6 +22,9 @@ public class SignalSource {
     @JsonProperty("source_name")
     private String sourceName;
 
-    @JsonProperty("sourceAddress")
+    @JsonProperty("source_address")
     private String sourceAddress;
+
+    @JsonProperty("source_phone")
+    private String sourcePhone;
 }

@@ -204,7 +204,7 @@ public class EphemAdapter implements EphemPort {
                     .signalId(signalId)
                     .sourceType(configuracaoSistema.getCommunityLeadersSourceId())
                     .sourceName(eventoIntegracao.getUserName())
-                    .sourceAddress(eventoIntegracao.getUserPhone())
+                    .sourcePhone(eventoIntegracao.getUserPhone())
                     .build();
             final var sourceId = addSource(signalSource);
             log.info("source criado com sucesso com o id {}", sourceId);
@@ -259,13 +259,13 @@ public class EphemAdapter implements EphemPort {
         final var signalId = signalSource.getSignalId() != null ? signalSource.getSignalId() : 0L;
         final var sourceType = signalSource.getSourceType() != null ? signalSource.getSourceType() : "";
         final var sourceName = signalSource.getSourceName() != null ? signalSource.getSourceName() : "";
-        final var sourceAddress = signalSource.getSourceAddress() != null ? signalSource.getSourceAddress() : "";
+        final var sourcePhone = signalSource.getSourcePhone() != null ? signalSource.getSourcePhone() : "";
 
         final var sourceParametros = Map.ofEntries(
                 entry("signal_id", signalId),
                 entry("source_type", sourceType),
                 entry("source_name", sourceName),
-                entry("source_address", sourceAddress)
+                entry("source_phone", sourcePhone)
         );
 
         final var executeParametros = asList(db, uid, odooApiKey, "eoc.signal.sources", "create", List.of(sourceParametros));
