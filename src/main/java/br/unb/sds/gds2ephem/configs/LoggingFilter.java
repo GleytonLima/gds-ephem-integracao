@@ -19,18 +19,26 @@ public class LoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        final var requestWrapper = new ContentCachingRequestWrapper(request);
-        final var responseWrapper = new ContentCachingResponseWrapper(response);
+        if (shouldLog(request)) {
+            final var requestWrapper = new ContentCachingRequestWrapper(request);
+            final var responseWrapper = new ContentCachingResponseWrapper(response);
 
-        filterChain.doFilter(requestWrapper, responseWrapper);
+            filterChain.doFilter(requestWrapper, responseWrapper);
 
-        final var requestBody = getStringValue(requestWrapper.getContentAsByteArray(), request.getCharacterEncoding());
-        final var responseBody = getStringValue(responseWrapper.getContentAsByteArray(), response.getCharacterEncoding());
+            final var requestBody = getStringValue(requestWrapper.getContentAsByteArray(), request.getCharacterEncoding());
+            final var responseBody = getStringValue(responseWrapper.getContentAsByteArray(), response.getCharacterEncoding());
 
-        log.info("Incoming request body: " + requestBody);
-        log.info("Outgoing response body: " + responseBody);
+            log.info("Incoming request body: " + requestBody);
+            log.info("Outgoing response body: " + responseBody);
 
-        responseWrapper.copyBodyToResponse();
+            responseWrapper.copyBodyToResponse();
+        } else {
+            filterChain.doFilter(request, response);
+        }
+    }
+
+    private boolean shouldLog(HttpServletRequest request) {
+        return "POST".equalsIgnoreCase(request.getMethod()) && request.getRequestURI().endsWith("/eventos");
     }
 
     private String getStringValue(byte[] contentAsByteArray, String characterEncoding) {
