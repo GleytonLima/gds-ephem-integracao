@@ -328,7 +328,6 @@ public class EphemAdapter implements EphemPort {
         };
 
         Object[] messages = (Object[]) this.xmlRpcClientObject.execute("execute_kw", messageParams);
-
         final var listMap = Arrays.stream(messages)
                 .map(object -> (HashMap<String, Object>) object)
                 .collect(Collectors.toList());
