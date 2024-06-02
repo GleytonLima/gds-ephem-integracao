@@ -1,9 +1,9 @@
 {
   "state_id": 0,
   "country_id": 0,
-  "report_date": "2023-08-22 09:00:00",
+  "report_date": "2023-08-22 08:00:00",
   "signal_type": "opening",
-  "incident_date": "2023-08-22 09:00:00",
+  "incident_date": "2023-08-22 08:00:00",
   "confidentiality": "everyone",
   "general_hazard_id": 0,
   "specific_hazard_id": 0

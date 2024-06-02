@@ -42,6 +42,7 @@ public class EventoIntegracao {
     private String userEmail;
     private String userName;
     private String userPhone;
+    private String userCountry;
     @CreatedDate
     private Instant createdAt;
     @LastModifiedDate

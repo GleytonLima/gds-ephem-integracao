@@ -17,6 +17,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static br.unb.sds.gds2ephem.ephem.EphemAdapter.EQUALS_IGNORECASE_COMPARATOR;
@@ -29,6 +31,22 @@ import static java.util.Collections.emptyList;
 public class EphemMapper {
     private final EphemPort ephemPort;
     private final Clock clock;
+    private static final String DEFAULT_ZONE_ID = "America/Sao_Paulo";
+    private static final
+    Map<String, String> COUNTRY_ZONE_ID_MAP = Map.ofEntries(
+            Map.entry("brazil", "America/Sao_Paulo"),
+            Map.entry("brasil", "America/Sao_Paulo"),
+            Map.entry("cabo verde", "Atlantic/Cape_Verde"),
+            Map.entry("cape verde", "Atlantic/Cape_Verde"),
+            Map.entry("portugal", "Europe/Lisbon"),
+            Map.entry("angola", "Africa/Luanda"),
+            Map.entry("mozambique", "Africa/Maputo"),
+            Map.entry("timor leste", "Asia/Dili"),
+            Map.entry("east timor", "Asia/Dili"),
+            Map.entry("guinea-bissau", "Africa/Bissau"),
+            Map.entry("sao tome and principe", "Africa/Sao_Tome"),
+            Map.entry("guinea equatorial", "Africa/Malabo")
+    );
 
     public JsonNode mapearData(EventoIntegracao eventoIntegracao) {
         final var input = eventoIntegracao.getData();
@@ -72,25 +90,30 @@ public class EphemMapper {
                     valorCorrespondente = new TextNode(LocalDate.now(clock).toString());
                 } else {
                     final var fromFormat = variavelInfo.get("from_format").asText();
-                    DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern(fromFormat);
-                    DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                    LocalDate localDate = LocalDate.parse(valorCorrespondente.asText(), inputFormatter);
-                    String outputDateString = localDate.format(outputFormatter);
+                    final var inputFormatter = DateTimeFormatter.ofPattern(fromFormat);
+                    final var outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    final var localDate = LocalDate.parse(valorCorrespondente.asText(), inputFormatter);
+                    final var outputDateString = localDate.format(outputFormatter);
                     valorCorrespondente = new TextNode(outputDateString);
                 }
             } else if ("datetime".equals(type)) {
                 final var fromFormat = variavelInfo.get("from_format");
+                final var userCountry = eventoIntegracao.getUserCountry();
+                var zoneId = DEFAULT_ZONE_ID;
+                if (COUNTRY_ZONE_ID_MAP.containsKey(Optional.ofNullable(userCountry).orElse("").toLowerCase())) {
+                    zoneId = COUNTRY_ZONE_ID_MAP.get(userCountry);
+                }
                 if (fromFormat.isArray()) {
                     for (JsonNode format : fromFormat) {
                         try {
-                            valorCorrespondente = extractDateTime(valorCorrespondente, format.asText());
+                            valorCorrespondente = extractDateTime(valorCorrespondente, format.asText(), zoneId);
                             break;
                         } catch (DateTimeParseException e) {
                             log.warn("Was not possible to parse date {} with format {}", valorCorrespondente, format.asText());
                         }
                     }
                 } else {
-                    valorCorrespondente = extractDateTime(valorCorrespondente, fromFormat.asText());
+                    valorCorrespondente = extractDateTime(valorCorrespondente, fromFormat.asText(), zoneId);
                 }
             } else if ("string".equals(type)) {
                 valorCorrespondente = new TextNode(valorCorrespondente.asText());
@@ -135,7 +158,7 @@ public class EphemMapper {
         return inputAlterado;
     }
 
-    private JsonNode extractDateTime(JsonNode valorCorrespondente, String fromFormat) {
+    private JsonNode extractDateTime(JsonNode valorCorrespondente, String fromFormat, String zoneId) {
         if (valorCorrespondente.asText().contains("@now")) {
             final var outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             valorCorrespondente = new TextNode(LocalDateTime.now(clock).format(outputFormatter));
@@ -144,7 +167,7 @@ public class EphemMapper {
             try {
                 final var inputFormatter = DateTimeFormatter.ofPattern(fromFormat);
                 final var localDateTime = LocalDateTime.parse(valorCorrespondente.asText(), inputFormatter);
-                final var localDateTimeUTC = localDateTime.atZone(ZoneId.of("America/Manaus")).withZoneSameInstant(ZoneId.of("UTC"));
+                final var localDateTimeUTC = localDateTime.atZone(ZoneId.of(zoneId)).withZoneSameInstant(ZoneId.of("UTC"));
                 final var outputDateTimeString = localDateTimeUTC.format(outputFormatter);
                 valorCorrespondente = new TextNode(outputDateTimeString);
             } catch (DateTimeParseException e) {
