@@ -34,8 +34,8 @@ public class EphemMapper {
     private static final String DEFAULT_ZONE_ID = "America/Sao_Paulo";
     private static final
     Map<String, String> COUNTRY_ZONE_ID_MAP = Map.ofEntries(
-            Map.entry("brazil", "America/Sao_Paulo"),
-            Map.entry("brasil", "America/Sao_Paulo"),
+            Map.entry("brazil", DEFAULT_ZONE_ID),
+            Map.entry("brasil", DEFAULT_ZONE_ID),
             Map.entry("cabo verde", "Atlantic/Cape_Verde"),
             Map.entry("cape verde", "Atlantic/Cape_Verde"),
             Map.entry("portugal", "Europe/Lisbon"),
@@ -101,7 +101,8 @@ public class EphemMapper {
                 final var userCountry = eventoIntegracao.getUserCountry();
                 var zoneId = DEFAULT_ZONE_ID;
                 if (COUNTRY_ZONE_ID_MAP.containsKey(Optional.ofNullable(userCountry).orElse("").toLowerCase())) {
-                    zoneId = COUNTRY_ZONE_ID_MAP.get(userCountry);
+                    assert userCountry != null;
+                    zoneId = COUNTRY_ZONE_ID_MAP.get(userCountry.toLowerCase());
                 }
                 if (fromFormat.isArray()) {
                     for (JsonNode format : fromFormat) {
@@ -213,6 +214,62 @@ public class EphemMapper {
             return 0;
         } catch (Exception e) {
             log.error("Não foi possível encontrar o registro para o modelo {} com filtro em {} com valor {}", modelId, modelPropertyFilter, valor, e);
+            return 0;
+        }
+    }
+
+    public Integer findCountryByName(final String valor) {
+        final var countryModelId = "res.country";
+        final var modelPropertyFilter = "name";
+        return buscarRegistroModelo(countryModelId, modelPropertyFilter, valor);
+    }
+
+    public Integer findStateByNameAndCountryId(final String valor, final Integer countryId) {
+        final var stateModelId = "res.country.state";
+        final var modelPropertyFilter = "name";
+        final var countryIdFilter = "country_id";
+        final var filtros = List.of(List.of(
+                asList(modelPropertyFilter, EQUALS_IGNORECASE_COMPARATOR, valor),
+                asList(countryIdFilter, EQUALS_IGNORECASE_COMPARATOR, countryId.toString())));
+        final var paramters = EphemParameters.builder()
+                .nomeModelo(stateModelId)
+                .fields(emptyList())
+                .filtros(filtros)
+                .contextLang("pt_BR")
+                .build();
+        try {
+            final var modelos = ephemPort.listarRegistros(paramters);
+            if (!modelos.isEmpty()) {
+                return Integer.parseInt(((HashMap<String, Object>) modelos.get(0)).get("id").toString());
+            }
+            return 0;
+        } catch (Exception e) {
+            log.error("Não foi possível encontrar o registro para o modelo {} com filtro em {} com valor {}", stateModelId, modelPropertyFilter, valor, e);
+            return 0;
+        }
+    }
+
+    public Integer findDistrictByNameAndStateId(final String valor, final Integer stateId) {
+        final var districtModelId = "res.country.state.district";
+        final var modelPropertyFilter = "name";
+        final var stateIdFilter = "state_id";
+        final var filtros = List.of(List.of(
+                asList(modelPropertyFilter, EQUALS_IGNORECASE_COMPARATOR, valor),
+                asList(stateIdFilter, EQUALS_IGNORECASE_COMPARATOR, stateId.toString())));
+        final var paramters = EphemParameters.builder()
+                .nomeModelo(districtModelId)
+                .fields(emptyList())
+                .filtros(filtros)
+                .contextLang("pt_BR")
+                .build();
+        try {
+            final var modelos = ephemPort.listarRegistros(paramters);
+            if (!modelos.isEmpty()) {
+                return Integer.parseInt(((HashMap<String, Object>) modelos.get(0)).get("id").toString());
+            }
+            return 0;
+        } catch (Exception e) {
+            log.error("Não foi possível encontrar o registro para o modelo {} com filtro em {} com valor {}", districtModelId, modelPropertyFilter, valor, e);
             return 0;
         }
     }
