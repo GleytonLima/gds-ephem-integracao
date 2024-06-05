@@ -21,17 +21,24 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import static br.unb.sds.gds2ephem.ephem.EphemAdapter.EQUALS_COMPARATOR;
 import static br.unb.sds.gds2ephem.ephem.EphemAdapter.EQUALS_IGNORECASE_COMPARATOR;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class EphemMapper {
+    public static final String PT_BR = "pt_BR";
     private final EphemPort ephemPort;
     private final Clock clock;
     private static final String DEFAULT_ZONE_ID = "America/Sao_Paulo";
+    public static final String COUNTRY_ID_KEY = "country_id";
+    public static final String STATE_ID_KEY = "state_id";
+    public static final String DISTRICT_IDS = "district_ids";
     private static final
     Map<String, String> COUNTRY_ZONE_ID_MAP = Map.ofEntries(
             Map.entry("brazil", DEFAULT_ZONE_ID),
@@ -155,8 +162,39 @@ public class EphemMapper {
                 inputAlterado.set(variavel, valorCorrespondente);
             }
         });
-        log.info("input alterado {}", inputAlterado);
+        mapLocationFields(inputAlterado, eventoIntegracao);
+        log.info("input to send to ephem {}", inputAlterado);
         return inputAlterado;
+    }
+
+    public void mapLocationFields(ObjectNode dadosRequest, EventoIntegracao eventoIntegracao) {
+        final var countryFromGds = eventoIntegracao.getUserCountry();
+        if (isNull(countryFromGds)) {
+            return;
+        }
+        final var countryIdFromEphem = findCountryByName(countryFromGds);
+        if (isNull(countryIdFromEphem) || countryIdFromEphem == 0) {
+            return;
+        }
+        dadosRequest.set(COUNTRY_ID_KEY, new IntNode(countryIdFromEphem));
+        final var fieldStateSourceName = eventoIntegracao.getEventoIntegracaoTemplate().getLocationMap().get("state_source_field").asText();
+        if (!eventoIntegracao.getData().has(fieldStateSourceName)) {
+            return;
+        }
+        final var stateFromGds = eventoIntegracao.getData().get(fieldStateSourceName).asText();
+        final var stateIdFromEphem = this.findStateByNameAndCountryId(stateFromGds, countryIdFromEphem);
+        if (nonNull(stateIdFromEphem) && stateIdFromEphem > 0) {
+            dadosRequest.set(STATE_ID_KEY, new IntNode(stateIdFromEphem));
+        }
+        final var fieldDistrictSourceName = eventoIntegracao.getEventoIntegracaoTemplate().getLocationMap().get("district_source_field").asText();
+        if (!eventoIntegracao.getData().has(fieldDistrictSourceName)) {
+            return;
+        }
+        final var cityFromGds = eventoIntegracao.getData().get(fieldDistrictSourceName).asText();
+        final var cityIdFromEphem = this.findDistrictByNameAndStateId(cityFromGds, stateIdFromEphem);
+        if (nonNull(cityIdFromEphem) && cityIdFromEphem > 0) {
+            dadosRequest.set(DISTRICT_IDS, new ArrayNode(JsonNodeFactory.instance).add(new IntNode(cityIdFromEphem)));
+        }
     }
 
     private JsonNode extractDateTime(JsonNode valorCorrespondente, String fromFormat, String zoneId) {
@@ -205,7 +243,7 @@ public class EphemMapper {
         final var filtros = List.of(List.of(
                 asList(modelPropertyFilter, EQUALS_IGNORECASE_COMPARATOR, valor)));
         paramters.setFiltros(filtros);
-        paramters.setContextLang("pt_BR");
+        paramters.setContextLang(PT_BR);
         try {
             final var modelos = ephemPort.listarRegistros(paramters);
             if (!modelos.isEmpty()) {
@@ -230,12 +268,12 @@ public class EphemMapper {
         final var countryIdFilter = "country_id";
         final var filtros = List.of(List.of(
                 asList(modelPropertyFilter, EQUALS_IGNORECASE_COMPARATOR, valor),
-                asList(countryIdFilter, EQUALS_IGNORECASE_COMPARATOR, countryId.toString())));
+                asList(countryIdFilter, EQUALS_COMPARATOR, countryId)));
         final var paramters = EphemParameters.builder()
                 .nomeModelo(stateModelId)
                 .fields(emptyList())
                 .filtros(filtros)
-                .contextLang("pt_BR")
+                .contextLang(PT_BR)
                 .build();
         try {
             final var modelos = ephemPort.listarRegistros(paramters);
@@ -255,12 +293,12 @@ public class EphemMapper {
         final var stateIdFilter = "state_id";
         final var filtros = List.of(List.of(
                 asList(modelPropertyFilter, EQUALS_IGNORECASE_COMPARATOR, valor),
-                asList(stateIdFilter, EQUALS_IGNORECASE_COMPARATOR, stateId.toString())));
+                asList(stateIdFilter, EQUALS_COMPARATOR, stateId)));
         final var paramters = EphemParameters.builder()
                 .nomeModelo(districtModelId)
                 .fields(emptyList())
                 .filtros(filtros)
-                .contextLang("pt_BR")
+                .contextLang(PT_BR)
                 .build();
         try {
             final var modelos = ephemPort.listarRegistros(paramters);

@@ -35,6 +35,7 @@ public class EphemAdapter implements EphemPort {
     public static final String MODEL_PARAMETER_NAME = "model";
     public static final String MODULES_PARAMETER_NAME = "modules";
     public static final String ILIKE_COMPARATOR = "ilike";
+    public static final String EQUALS_COMPARATOR = "=";
     public static final String EQUALS_IGNORECASE_COMPARATOR = "=ilike";
     public static final String FIELDS_PARAMETER_NAME = "fields";
     public static final String LIMIT_PARAMETER_NAME = "limit";

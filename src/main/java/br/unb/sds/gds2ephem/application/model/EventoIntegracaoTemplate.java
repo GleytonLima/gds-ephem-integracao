@@ -32,4 +32,7 @@ public class EventoIntegracaoTemplate {
     @Type(type = "json")
     @Column(columnDefinition = "jsonb")
     private JsonNode inputEphemMap;
+    @Type(type = "json")
+    @Column(columnDefinition = "jsonb")
+    private JsonNode locationMap;
 }

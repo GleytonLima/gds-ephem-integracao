@@ -82,15 +82,6 @@ public class EphemScheduler {
         }
     }
 
-    private void addFixedFields(Map<String, Object> dadosRequest, EventoIntegracao eventoIntegracao) {
-        final var countryName = eventoIntegracao.getUserCountry();
-        final var countryId = ephemMapper.findCountryByName(countryName);
-        if (countryId != null && countryId > 0) {
-            dadosRequest.put("country_id", countryId);
-        }
-
-    }
-
     public void validarDados(JsonNode definition, JsonNode data) {
         final var factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
         final var jsonSchema = factory.getSchema(definition);
