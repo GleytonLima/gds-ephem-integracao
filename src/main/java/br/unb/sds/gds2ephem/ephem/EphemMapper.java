@@ -50,9 +50,18 @@ public class EphemMapper {
             Map.entry("mozambique", "Africa/Maputo"),
             Map.entry("timor leste", "Asia/Dili"),
             Map.entry("east timor", "Asia/Dili"),
-            Map.entry("guinea-bissau", "Africa/Bissau"),
+            Map.entry("guiné-bissau", "Africa/Bissau"),
             Map.entry("sao tome and principe", "Africa/Sao_Tome"),
-            Map.entry("guinea equatorial", "Africa/Malabo")
+            Map.entry("guiné-equatorial", "Africa/Malabo")
+    );
+
+    Map<String, String> COUNTRY_TRANSLATION_MAP = Map.ofEntries(
+            Map.entry("brazil", "brasil"),
+            Map.entry("cape verde", "cabo verde"),
+            Map.entry("east timor", "timor leste"),
+            Map.entry("guinea-bissau", "guiné-bissau"),
+            Map.entry("equatorial guinea", "guiné-equatorial"),
+            Map.entry("sao tome and principe", "sao tome e principe")
     );
 
     public JsonNode mapearData(EventoIntegracao eventoIntegracao) {
@@ -256,9 +265,12 @@ public class EphemMapper {
         }
     }
 
-    public Integer findCountryByName(final String valor) {
+    public Integer findCountryByName(String valor) {
         final var countryModelId = "res.country";
         final var modelPropertyFilter = "name";
+        if (COUNTRY_TRANSLATION_MAP.containsKey(valor.toLowerCase())) {
+            valor = COUNTRY_TRANSLATION_MAP.get(valor.toLowerCase());
+        }
         return buscarRegistroModelo(countryModelId, modelPropertyFilter, valor);
     }
 
