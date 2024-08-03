@@ -94,7 +94,7 @@ public class EphemScheduler {
 
         if (!listaErros.isEmpty()) {
             log.error("Erro ao processar os dados: {}", listaErros);
-            throw new EventoIntegracaoValidacaoException(listaErros.toString());
+            //throw new EventoIntegracaoValidacaoException(listaErros.toString());
         }
     }
 }
