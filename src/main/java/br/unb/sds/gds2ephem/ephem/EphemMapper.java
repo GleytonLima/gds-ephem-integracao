@@ -36,8 +36,8 @@ public class EphemMapper {
     private final EphemPort ephemPort;
     private final Clock clock;
     private static final String DEFAULT_ZONE_ID = "America/Sao_Paulo";
-    public static final String COUNTRY_ID_KEY = "country_id";
-    public static final String STATE_ID_KEY = "state_id";
+    public static final String COUNTRY_ID_KEY = "country_ids";
+    public static final String STATE_ID_KEY = "state_ids";
     public static final String DISTRICT_IDS = "district_ids";
     private static final
     Map<String, String> COUNTRY_ZONE_ID_MAP = Map.ofEntries(
@@ -176,6 +176,17 @@ public class EphemMapper {
         return inputAlterado;
     }
 
+    /**
+     * (0, 0, {values}): Adds a new record by providing a dictionary of field values.
+     * (1, id, {values}): Updates an existing record with the given ID by providing a dictionary of field values.
+     * (2, id): Removes the record with the given ID from the set but does not delete it from the database.
+     * (3, id): Removes the record with the given ID from the set without deleting it from the database.
+     * (4, id): Adds an existing record with the given ID to the set.
+     * (5): Removes all records from the set.
+     * (6, 0, [ids])
+     * @param dadosRequest
+     * @param eventoIntegracao
+     */
     public void mapLocationFields(ObjectNode dadosRequest, EventoIntegracao eventoIntegracao) {
         final var countryFromGds = eventoIntegracao.getUserCountry();
         if (isNull(countryFromGds)) {
@@ -185,7 +196,16 @@ public class EphemMapper {
         if (isNull(countryIdFromEphem) || countryIdFromEphem == 0) {
             return;
         }
-        dadosRequest.set(COUNTRY_ID_KEY, new IntNode(countryIdFromEphem));
+        ArrayNode countryArray = JsonNodeFactory.instance.arrayNode();
+
+        final var countriesIdsArray = new ArrayNode(JsonNodeFactory.instance);
+        countriesIdsArray.add(new IntNode(countryIdFromEphem));
+
+        countryArray.add(new IntNode(6));
+        countryArray.add(new IntNode(0));
+        countryArray.add(countriesIdsArray);
+
+        dadosRequest.set(COUNTRY_ID_KEY, new ArrayNode(JsonNodeFactory.instance).add(countryArray));
         final var fieldStateSourceName = eventoIntegracao.getEventoIntegracaoTemplate().getLocationMap().get("state_source_field").asText();
         if (!eventoIntegracao.getData().has(fieldStateSourceName)) {
             return;
@@ -193,7 +213,14 @@ public class EphemMapper {
         final var stateFromGds = eventoIntegracao.getData().get(fieldStateSourceName).asText();
         final var stateIdFromEphem = this.findStateByNameAndCountryId(stateFromGds, countryIdFromEphem);
         if (nonNull(stateIdFromEphem) && stateIdFromEphem > 0) {
-            dadosRequest.set(STATE_ID_KEY, new IntNode(stateIdFromEphem));
+            final var stateArray = JsonNodeFactory.instance.arrayNode();
+            final var statesIdsArray = new ArrayNode(JsonNodeFactory.instance);
+            statesIdsArray.add(new IntNode(stateIdFromEphem));
+
+            stateArray.add(new IntNode(6));
+            stateArray.add(new IntNode(0));
+            stateArray.add(statesIdsArray);
+            dadosRequest.set(STATE_ID_KEY, new ArrayNode(JsonNodeFactory.instance).add(stateArray));
         }
         final var fieldDistrictSourceName = eventoIntegracao.getEventoIntegracaoTemplate().getLocationMap().get("district_source_field").asText();
         if (!eventoIntegracao.getData().has(fieldDistrictSourceName)) {
@@ -202,7 +229,11 @@ public class EphemMapper {
         final var cityFromGds = eventoIntegracao.getData().get(fieldDistrictSourceName).asText();
         final var cityIdFromEphem = this.findDistrictByNameAndStateId(cityFromGds, stateIdFromEphem);
         if (nonNull(cityIdFromEphem) && cityIdFromEphem > 0) {
-            dadosRequest.set(DISTRICT_IDS, new ArrayNode(JsonNodeFactory.instance).add(new IntNode(cityIdFromEphem)));
+            ArrayNode cityArray = JsonNodeFactory.instance.arrayNode();
+            cityArray.add(new IntNode(6));
+            cityArray.add(new IntNode(0));
+            cityArray.add(new ArrayNode(JsonNodeFactory.instance).add(cityIdFromEphem));
+            dadosRequest.set(DISTRICT_IDS, new ArrayNode(JsonNodeFactory.instance).add(cityArray));
         }
     }
 
