@@ -34,7 +34,7 @@ public class EventoIntegracaoValidator implements Validator {    public static f
             }
         } catch (Exception e) {
             log.error("erro ao processa validacao: {}", e.getMessage());
-           //throw new EventoIntegracaoValidacaoException(e.getMessage());
+            throw new EventoIntegracaoValidacaoException(e.getMessage());
         }
     }
 }
