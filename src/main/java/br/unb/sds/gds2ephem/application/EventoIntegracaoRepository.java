@@ -12,11 +12,13 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.LockModeType;
 import javax.persistence.QueryHint;
 import java.util.List;
 
+@CrossOrigin
 @RepositoryRestResource(collectionResourceRel = "eventos", path = "eventos")
 public interface EventoIntegracaoRepository extends PagingAndSortingRepository<EventoIntegracao, Long>,
         QuerydslPredicateExecutor<EventoIntegracao>,
