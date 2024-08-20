@@ -1,6 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Local Environment - Ephem Mock - Postgres DB" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" />
+    <option name="envFilePaths">
+      <option value="$PROJECT_DIR$/docker/app/.env" />
+    </option>
     <module name="gds2ephem" />
     <selectedOptions>
       <option name="environmentVariables" />

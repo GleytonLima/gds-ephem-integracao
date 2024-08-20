@@ -36,6 +36,7 @@ public class EphemMapper {
     private final EphemPort ephemPort;
     private final Clock clock;
     private static final String DEFAULT_ZONE_ID = "America/Sao_Paulo";
+    public static final String SOURCE_COUNTRY_ID = "source_country_id";
     public static final String COUNTRY_ID_KEY = "country_ids";
     public static final String STATE_ID_KEY = "state_ids";
     public static final String DISTRICT_IDS = "district_ids";
@@ -196,6 +197,7 @@ public class EphemMapper {
         if (isNull(countryIdFromEphem) || countryIdFromEphem == 0) {
             return;
         }
+        dadosRequest.set(SOURCE_COUNTRY_ID, new IntNode(countryIdFromEphem));
         ArrayNode countryArray = JsonNodeFactory.instance.arrayNode();
 
         final var countriesIdsArray = new ArrayNode(JsonNodeFactory.instance);
