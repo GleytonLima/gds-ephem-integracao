@@ -21,6 +21,7 @@ public class EphemParameters {
             "general_hazard_id",
             "specific_hazard_id",
             "country_id",
+            "source_country_id",
             "state_id",
             "district_ids",
             "signal_type",
