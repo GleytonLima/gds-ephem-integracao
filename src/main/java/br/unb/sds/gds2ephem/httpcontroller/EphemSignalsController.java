@@ -41,8 +41,8 @@ public class EphemSignalsController {
                 .nomeModelo(SIGNAL_MODEL_NAME)
                 .fields(SIGNAL_DEFAULT_PARAMETERS)
                 .sort(MODEL_DEFAULT_SORT)
-                .offset(offset)
-                .size(size);
+                .offset(0)
+                .size(100);
         Page<EventoIntegracao> eventos = buscarEventosIntegracao(size, page, userId);
         final var signalIdsArray = eventos.stream()
                 .map(EventoIntegracao::getSignalId)

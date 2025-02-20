@@ -40,6 +40,7 @@ public class EphemParameters {
             "date_closed",
             "date_outcome_decided",
             "description",
+            "notification_date",
             "display_name",
             "is_event_closed",
             "under_verification_date",
