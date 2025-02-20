@@ -48,6 +48,9 @@ public class EphemSignalsController {
         final var signalIdsArray = eventos.stream()
                 .map(EventoIntegracao::getSignalId)
                 .toArray(Object[]::new);
+
+        log.info("signalIdsArray: {}", signalIdsArray);
+
         parametersBuilder.idList(signalIdsArray);
 
         final var parameters = parametersBuilder.build();
