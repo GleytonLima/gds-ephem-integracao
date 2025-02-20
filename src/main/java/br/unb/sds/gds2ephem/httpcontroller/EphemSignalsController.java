@@ -7,6 +7,7 @@ import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
 import br.unb.sds.gds2ephem.ephem.EphemParameters;
 import br.unb.sds.gds2ephem.httpcontroller.dto.Signal;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.CollectionModel;
@@ -30,19 +31,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequiredArgsConstructor
 @RequestMapping(value = "/signals", produces = MediaType.APPLICATION_JSON_VALUE)
 @EnableHypermediaSupport(type = {EnableHypermediaSupport.HypermediaType.HAL})
+@Slf4j
 public class EphemSignalsController {
     private final EphemPort ephemPort;
     private final EventoIntegracaoRepository eventoIntegracaoRepository;
 
     @GetMapping
     public CollectionModel<?> getSignals(@RequestParam("size") Integer size, @RequestParam("page") Integer page, @RequestParam(value = "user_id", required = false) Long userId) {
-        final var offset = page * size;
         final var parametersBuilder = EphemParameters.builder()
                 .nomeModelo(SIGNAL_MODEL_NAME)
                 .fields(SIGNAL_DEFAULT_PARAMETERS)
                 .sort(MODEL_DEFAULT_SORT)
                 .offset(0)
-                .size(100);
+                .size(10000);
         Page<EventoIntegracao> eventos = buscarEventosIntegracao(size, page, userId);
         final var signalIdsArray = eventos.stream()
                 .map(EventoIntegracao::getSignalId)
