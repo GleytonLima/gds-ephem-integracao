@@ -57,6 +57,7 @@ public class EphemParameters {
             "was_monitored_date",
             "was_under_verification",
             "was_under_verification_date",
+            "triage_date",
             "__last_update"
             );
 
