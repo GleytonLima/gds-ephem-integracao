@@ -5,6 +5,7 @@ import br.unb.sds.gds2ephem.application.EventoIntegracaoRepository;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracaoStatus;
 import br.unb.sds.gds2ephem.application.model.exceptions.EventoIntegracaoValidacaoException;
+import br.unb.sds.gds2ephem.infrastructure.NotificationService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static br.unb.sds.gds2ephem.ephem.EmojiToPortugues.tratarCaracteresEspeciaisEventoIntegracao;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -32,6 +35,7 @@ public class EphemScheduler {
 
     private final EventoIntegracaoRepository eventoIntegracaoRepository;
     private final EphemPort ephemPort;
+    private final NotificationService notificationService;
 
     private final NarrativeSignalService narrativeSignalService;
     private final EphemMapper ephemMapper;
@@ -56,6 +60,7 @@ public class EphemScheduler {
                     try {
                         log.info("processando evento {}", eventoIntegracao.getId());
                         final var objectMapper = new ObjectMapper();
+                        tratarCaracteresEspeciaisEventoIntegracao(eventoIntegracao);
                         final var dadosMapeados = ephemMapper.mapearData(eventoIntegracao);
 
                         validarDados(eventoIntegracao.getEventoIntegracaoTemplate().getDefinition(), dadosMapeados);
@@ -71,6 +76,13 @@ public class EphemScheduler {
                         eventoIntegracaoRepository.save(eventoIntegracao);
                     } catch (Exception e) {
                         log.error("falha na criacao do evento", e);
+
+                        // Notificar erro
+                        String assunto = "GDS/Ephem - Integrador - Erro no Processamento de Evento";
+                        String mensagem = String.format("Ocorreu um erro ao processar o evento de ID %s",
+                                eventoIntegracao.getId());
+                        notificationService.notificarErro(assunto, mensagem, e);
+
                         eventoIntegracao.setStatus(EventoIntegracaoStatus.ERRO.name());
                         final var errorMessage = Optional.ofNullable(e.getMessage()).orElse(STATUS_MESSAGE_ERRO_INESPERADO);
                         eventoIntegracao.setStatusMessage(errorMessage.substring(0, Math.min(errorMessage.length(), MAX_SIZE_MESSAGE)));
