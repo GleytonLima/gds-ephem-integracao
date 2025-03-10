@@ -952,7 +952,7 @@ public class EmojiToPortugues {
             }
 
         } catch (Exception e) {
-            log.error("Erro ao tratar evento de integração", e);
+            log.error("Erro ao tratar caracteres especiais", e);
         }
     }
 }
