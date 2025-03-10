@@ -5,6 +5,7 @@ import br.unb.sds.gds2ephem.application.EventoIntegracaoRepository;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracaoStatus;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracaoTemplate;
+import br.unb.sds.gds2ephem.infrastructure.NotificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,9 @@ class EphemSchedulerTest {
     private EphemPort ephemPort;
 
     @Mock
+    private NotificationService notificationService;
+
+    @Mock
     private EphemMapper ephemMapper;
 
     @Mock
@@ -46,7 +50,7 @@ class EphemSchedulerTest {
     @SneakyThrows
     @BeforeEach
     void setUp() {
-        scheduler = new EphemScheduler(transactionTemplate, eventoIntegracaoRepository, ephemPort, narrativeSignalService, ephemMapper);
+        scheduler = new EphemScheduler(transactionTemplate, eventoIntegracaoRepository, ephemPort, notificationService, narrativeSignalService, ephemMapper);
     }
 
     @SneakyThrows
