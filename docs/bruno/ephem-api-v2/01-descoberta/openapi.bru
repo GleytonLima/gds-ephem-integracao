@@ -1,0 +1,19 @@
+meta {
+  name: OpenAPI (publico)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/openapi.json
+  body: none
+  auth: none
+}
+
+tests {
+  test("contrato tem POST /signals e SignalCreate", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().paths["/signals"]).to.have.property("post");
+    expect(res.getBody().components.schemas).to.have.property("SignalCreate");
+  });
+}

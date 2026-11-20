@@ -1,0 +1,19 @@
+meta {
+  name: Descoberta (publico)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("200 e versao 2.0", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().version).to.equal("2.0");
+    expect(res.getBody().resources).to.include("signals");
+  });
+}

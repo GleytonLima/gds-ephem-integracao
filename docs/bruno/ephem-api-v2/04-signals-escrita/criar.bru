@@ -1,0 +1,45 @@
+meta {
+  name: Criar signal
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/signals
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "external_id": "{{externalId}}",
+    "title": "Teste de integracao GDS (Bruno)",
+    "health_interface": ["Human"],
+    "description": "<p>Signal de teste criado pela collection Bruno do integrador GDS. Pode ser descartado.</p>",
+    "signal_type": "primary",
+    "confidentiality": 1,
+    "privacy": "portal",
+    "geo": { "country": "{{country}}" },
+    "source": { "address": "https://gds.proepi.org.br" }
+  }
+}
+
+script:pre-request {
+  bru.setVar("externalId", "BRUNO-TEST-" + Date.now());
+}
+
+script:post-response {
+  const data = (res.getBody() || {}).data || {};
+  bru.setVar("signalId", data.id);
+  bru.setVar("updatedAt", data.updated_at);
+}
+
+tests {
+  test("201 com signal_seq e status inicial", function() {
+    expect(res.getStatus()).to.equal(201);
+    const data = res.getBody().data;
+    expect(data.external_id).to.equal(bru.getVar("externalId"));
+    expect(data.signal_seq).to.be.a("string");
+    expect(data.status).to.equal("info");
+  });
+}

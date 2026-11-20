@@ -1,0 +1,28 @@
+meta {
+  name: health_interface invalido (422)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/signals
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "external_id": "BRUNO-TEST-invalido-hi",
+    "title": "Nao deve ser salvo",
+    "health_interface": ["Humann"],
+    "description": "x",
+    "source": { "address": "https://gds.proepi.org.br" }
+  }
+}
+
+tests {
+  test("422 aponta o campo health_interface", function() {
+    expect(res.getStatus()).to.equal(422);
+    expect(res.getBody().error.details[0].field).to.equal("health_interface");
+  });
+}

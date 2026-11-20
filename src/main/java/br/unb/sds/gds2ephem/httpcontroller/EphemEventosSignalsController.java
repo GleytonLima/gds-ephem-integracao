@@ -31,6 +31,7 @@ import java.util.List;
 import static br.unb.sds.gds2ephem.application.model.ConfiguracaoSistema.DEFAULT_SYSTEM_CONFIG_ID;
 import static java.util.Objects.isNull;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
@@ -93,6 +94,11 @@ public class EphemEventosSignalsController {
         if (evento.isEmpty() || evento.get().getStatus().equals(EventoIntegracaoStatus.DELETADO.name())) {
             throw new ResponseStatusException(NOT_FOUND, "evento nao encontrado");
         }
+        final PageRequest pageRequest = PageRequest.of(page, size);
+        if (isNull(evento.get().getSignalId())) {
+            // evento ainda nao virou signal no ePHEM: ainda nao ha conversa
+            return EntityModel.of(assembler.toModel(Page.<SinalMensagem>empty(pageRequest), EntityModel::of));
+        }
         final var filters = EphemMessageParameters.builder()
                 .fromIds(new Object[]{idUsuarioGdsApp, adminUserId})
                 .signalIds(new Object[]{evento.get().getSignalId()})
@@ -101,8 +107,8 @@ public class EphemEventosSignalsController {
                 .offset((long) page * (long) size)
                 .build();
         final var mensagens = ephemPort.listarMensagens(filters);
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<SinalMensagem> messagePage = new PageImpl<>(mensagens, pageRequest, mensagens.size()); // Simula a paginação
+        final var total = ephemPort.contarMensagens(filters);
+        Page<SinalMensagem> messagePage = new PageImpl<>(mensagens, pageRequest, total);
 
         PagedModel<EntityModel<SinalMensagem>> pagedModel = assembler.toModel(messagePage, EntityModel::of);
 
@@ -121,6 +127,9 @@ public class EphemEventosSignalsController {
         final var evento = eventoIntegracaoRepository.findById(eventId);
         if (evento.isEmpty() || evento.get().getStatus().equals(EventoIntegracaoStatus.DELETADO.name())) {
             throw new ResponseStatusException(NOT_FOUND, "evento nao encontrado");
+        }
+        if (isNull(evento.get().getSignalId())) {
+            throw new ResponseStatusException(CONFLICT, "o evento ainda nao foi enviado ao ePHEM; tente novamente mais tarde");
         }
         ephemPort.criarMensagem(evento.get().getSignalId(), idUsuarioGdsApp, mensagem.getSanitizedMessage(), adminUserId);
         return ResponseEntity.ok(new SignalMessageResponse(mensagem.getMessage()));

@@ -1,0 +1,19 @@
+meta {
+  name: Listar signals
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/signals?sort=-updated&page_size=5
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("200 com paginacao", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().meta.page).to.equal(1);
+    expect(res.getBody().meta.page_size).to.equal(5);
+  });
+}

@@ -94,4 +94,10 @@ public class EphemNoopAdapter implements EphemPort {
         log.info("listarMensagens Noop");
         return emptyList();
     }
+
+    @Override
+    public long contarMensagens(EphemMessageParameters parameters) {
+        log.info("contarMensagens Noop");
+        return 0L;
+    }
 }

@@ -1,0 +1,27 @@
+meta {
+  name: If-Match antigo da 409
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/signals/{{externalId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  If-Match: "{{staleUpdatedAt}}"
+}
+
+body:json {
+  {
+    "confidentiality": 1
+  }
+}
+
+tests {
+  test("409 conflict", function() {
+    expect(res.getStatus()).to.equal(409);
+  });
+}

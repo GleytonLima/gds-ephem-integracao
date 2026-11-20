@@ -35,3 +35,5 @@ psql -c "CREATE USER $POSTGRES_SVUSER WITH PASSWORD '$POSTGRES_PASSWORD';"
 
 # create databases
 psql -c 'CREATE DATABASE "integracao";'
+# instancia de Cabo Verde (API v2); em servidor ja existente, rode este comando a mao
+psql -c 'CREATE DATABASE "integracao_cv";'

@@ -50,7 +50,8 @@ class EphemSchedulerTest {
     @SneakyThrows
     @BeforeEach
     void setUp() {
-        scheduler = new EphemScheduler(transactionTemplate, eventoIntegracaoRepository, ephemPort, notificationService, narrativeSignalService, ephemMapper);
+        final var signalPublisher = new XmlRpcSignalPublisher(ephemPort, narrativeSignalService, ephemMapper);
+        scheduler = new EphemScheduler(transactionTemplate, eventoIntegracaoRepository, notificationService, signalPublisher);
     }
 
     @SneakyThrows

@@ -35,12 +35,12 @@ public class EphemMapper {
     public static final String PT_BR = "pt_BR";
     private final EphemPort ephemPort;
     private final Clock clock;
-    private static final String DEFAULT_ZONE_ID = "America/Sao_Paulo";
+    public static final String DEFAULT_ZONE_ID = "America/Sao_Paulo";
     public static final String SOURCE_COUNTRY_ID = "source_country_id";
     public static final String COUNTRY_ID_KEY = "country_ids";
     public static final String STATE_ID_KEY = "state_ids";
     public static final String DISTRICT_IDS = "district_ids";
-    private static final
+    public static final
     Map<String, String> COUNTRY_ZONE_ID_MAP = Map.ofEntries(
             Map.entry("brazil", DEFAULT_ZONE_ID),
             Map.entry("brasil", DEFAULT_ZONE_ID),
@@ -285,7 +285,7 @@ public class EphemMapper {
         final var filtros = List.of(List.of(
                 asList(modelPropertyFilter, EQUALS_IGNORECASE_COMPARATOR, valor)));
         paramters.setFiltros(filtros);
-        paramters.setContextLang(PT_BR);
+
         try {
             final var modelos = ephemPort.listarRegistros(paramters);
             if (!modelos.isEmpty()) {
@@ -318,7 +318,7 @@ public class EphemMapper {
                 .nomeModelo(stateModelId)
                 .fields(emptyList())
                 .filtros(filtros)
-                .contextLang(PT_BR)
+
                 .build();
         try {
             final var modelos = ephemPort.listarRegistros(paramters);
@@ -343,7 +343,7 @@ public class EphemMapper {
                 .nomeModelo(districtModelId)
                 .fields(emptyList())
                 .filtros(filtros)
-                .contextLang(PT_BR)
+
                 .build();
         try {
             final var modelos = ephemPort.listarRegistros(paramters);

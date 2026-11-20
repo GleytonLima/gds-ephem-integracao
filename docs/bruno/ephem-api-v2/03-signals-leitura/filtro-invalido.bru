@@ -1,0 +1,18 @@
+meta {
+  name: Status invalido da 422
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/signals?status=inexistente
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("422 validation_error em vez de lista vazia", function() {
+    expect(res.getStatus()).to.equal(422);
+    expect(res.getBody().error.code).to.equal("validation_error");
+  });
+}

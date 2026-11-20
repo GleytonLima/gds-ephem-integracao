@@ -1,0 +1,26 @@
+meta {
+  name: Estados do pais
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/states?country={{country}}
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  const data = (res.getBody() || {}).data || [];
+  if (data.length) {
+    bru.setVar("stateId", data[0].id);
+    bru.setVar("stateName", data[0].name);
+  }
+}
+
+tests {
+  test("200 e ao menos um estado", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.length).to.be.greaterThan(0);
+  });
+}

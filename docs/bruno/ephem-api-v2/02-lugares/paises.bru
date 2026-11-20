@@ -1,0 +1,19 @@
+meta {
+  name: Paises
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/countries?q={{country}}
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("200 com envelope de lista", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.be.an("array");
+    expect(res.getBody().meta).to.have.property("total");
+  });
+}

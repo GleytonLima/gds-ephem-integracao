@@ -112,8 +112,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build and push
         run: |
-          docker build -t ${{ env.DOCKER_IMAGE_NAME }} .
-          docker push ${{ env.DOCKER_IMAGE_NAME }}
+          # latest para o deploy e o SHA do commit para poder voltar uma instancia a uma versao anterior
+          docker build -t ${{ env.DOCKER_IMAGE_NAME }}:latest -t ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} .
+          docker push ${{ env.DOCKER_IMAGE_NAME }}:latest
+          docker push ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
       - name: restart app on digital ocean
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -122,7 +124,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            set -e
             cd gds-vbe-api/
-            docker-compose stop integracaoapp
-            docker-compose pull integracaoapp
-            docker-compose up -d integracaoapp
+            # integracaoapp: ePHEM UnB; integracaoapp-cv: ePHEM Cabo Verde (API v2), quando existir no compose do host
+            SERVICOS=integracaoapp
+            if docker-compose config --services | grep -qx integracaoapp-cv; then
+              SERVICOS="$SERVICOS integracaoapp-cv"
+            fi
+            echo "atualizando: $SERVICOS"
+            docker-compose pull $SERVICOS
+            docker-compose up -d $SERVICOS

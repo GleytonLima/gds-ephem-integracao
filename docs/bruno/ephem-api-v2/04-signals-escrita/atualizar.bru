@@ -1,0 +1,33 @@
+meta {
+  name: Atualizar com If-Match
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/signals/{{externalId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  If-Match: "{{updatedAt}}"
+}
+
+body:json {
+  {
+    "confidentiality": 2,
+    "description": "<p>Atualizado pela collection Bruno.</p>"
+  }
+}
+
+script:post-response {
+  bru.setVar("staleUpdatedAt", bru.getVar("updatedAt"));
+}
+
+tests {
+  test("200 e confidentiality 2", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.confidentiality).to.equal(2);
+  });
+}
