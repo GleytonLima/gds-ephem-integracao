@@ -114,12 +114,62 @@ public class EphemAdapter implements EphemPort {
         return atributos;
     }
 
+    /**
+     * Campos existentes por modelo, lidos uma vez via fields_get. Versoes diferentes do ePHEM tem campos
+     * diferentes (no Odoo 18 de Cabo Verde nao existem country_id, state_id nem __last_update), e um unico
+     * campo inexistente faz o search_read inteiro falhar.
+     */
+    private final Map<String, Set<String>> camposPorModelo = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /**
+     * Remove os campos que o modelo nao tem. Lista vazia (todos os campos) segue como esta; se nao for
+     * possivel ler os campos do modelo, a lista tambem segue como esta.
+     */
+    List<String> camposExistentes(String modelo, List<String> campos) {
+        if (isNull(campos) || campos.isEmpty() || isNull(modelo)) {
+            return campos;
+        }
+        var existentes = camposPorModelo.get(modelo);
+        if (isNull(existentes)) {
+            existentes = lerCamposDoModelo(modelo);
+            if (existentes.isEmpty()) {
+                // leitura falhou: nao guarda em cache e consulta sem filtrar
+                return campos;
+            }
+            camposPorModelo.put(modelo, existentes);
+        }
+        final var conhecidos = existentes;
+        final var filtrados = campos.stream().filter(conhecidos::contains).collect(Collectors.toList());
+        if (filtrados.size() != campos.size()) {
+            log.debug("modelo {}: campos inexistentes ignorados {}", modelo,
+                    campos.stream().filter(c -> !conhecidos.contains(c)).collect(Collectors.toList()));
+        }
+        return filtrados;
+    }
+
+    private Set<String> lerCamposDoModelo(String modelo) {
+        try {
+            final var parametros = asList(db, uid, odooApiKey, modelo, "fields_get", SEM_FILTRO,
+                    Map.of("attributes", List.of("type")));
+            final var resposta = this.xmlRpcClientObject.execute(EXECUTE_KW, parametros);
+            if (resposta instanceof Map) {
+                final var campos = ((Map<?, ?>) resposta).keySet().stream().map(Object::toString).collect(Collectors.toSet());
+                log.info("modelo {}: {} campos no ePHEM", modelo, campos.size());
+                return campos;
+            }
+        } catch (Exception e) {
+            log.warn("nao foi possivel ler os campos do modelo {}; consultas seguem sem filtrar campos: {}", modelo, e.getMessage());
+        }
+        return Collections.emptySet();
+    }
+
     @Override
     @SneakyThrows
     public List<Object> listarRegistros(EphemParameters ephemParameters) {
         autenticar();
         final var dadosPesquisa = Map.ofEntries(
-                entry(FIELDS_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getFields()).orElse(emptyList())),
+                entry(FIELDS_PARAMETER_NAME, Optional.ofNullable(
+                        camposExistentes(ephemParameters.getNomeModelo(), ephemParameters.getFields())).orElse(emptyList())),
                 entry(LIMIT_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getSize()).orElse(10)),
                 entry(OFFSET_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getOffset()).orElse(0)),
                 entry(ORDER_BY_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getSort()).orElse("")),
