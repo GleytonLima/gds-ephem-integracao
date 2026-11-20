@@ -47,11 +47,15 @@ class EphemSchedulerTest {
     @Mock
     private NarrativeSignalService narrativeSignalService;
 
+    @Mock
+    private NotaInicialService notaInicialService;
+
     @SneakyThrows
     @BeforeEach
     void setUp() {
         final var signalPublisher = new XmlRpcSignalPublisher(ephemPort, narrativeSignalService, ephemMapper);
-        scheduler = new EphemScheduler(transactionTemplate, eventoIntegracaoRepository, notificationService, signalPublisher);
+        scheduler = new EphemScheduler(transactionTemplate, eventoIntegracaoRepository, notificationService, signalPublisher,
+                notaInicialService);
     }
 
     @SneakyThrows
@@ -94,6 +98,8 @@ class EphemSchedulerTest {
                 .findTop10ByStatusOrderByCreatedAtAsc(EventoIntegracaoStatus.CRIADO.name());
         verify(ephemPort, times(2)).criarSignal(any(), any());
         verify(eventoIntegracaoRepository, times(2)).save(any(EventoIntegracao.class));
+        // cada signal criado ganha a nota inicial com quem relatou
+        verify(notaInicialService, times(2)).registrar(any(EventoIntegracao.class), eq(123L));
     }
 
     @SneakyThrows
@@ -120,6 +126,7 @@ class EphemSchedulerTest {
                 .findTop10ByStatusOrderByCreatedAtAsc(EventoIntegracaoStatus.CRIADO.name());
         verify(ephemPort, times(2)).criarSignal(any(), any());
         verify(eventoIntegracaoRepository, times(2)).save(any(EventoIntegracao.class));
+        verify(notaInicialService, never()).registrar(any(), any());
     }
 
 

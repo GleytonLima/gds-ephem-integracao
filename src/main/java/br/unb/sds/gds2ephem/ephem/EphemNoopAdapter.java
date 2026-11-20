@@ -80,6 +80,12 @@ public class EphemNoopAdapter implements EphemPort {
     }
 
     @Override
+    public Long criarNotaHistorico(Long signalId, Long authorPartnerId, String html) {
+        log.info("criarNotaHistorico Noop");
+        return 1L;
+    }
+
+    @Override
     public HashMap<String, Object> consultarSignalPorId(Long id) {
         return new HashMap<>();
     }
