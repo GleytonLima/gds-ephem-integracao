@@ -398,12 +398,21 @@ public class EphemAdapter implements EphemPort {
         return ((Number) this.xmlRpcClientObject.execute(EXECUTE_KW, countParams)).longValue();
     }
 
-    private static Object[] filtroMensagens(EphemMessageParameters parameters) {
+    /**
+     * Conversa do signal com o GDS: mensagens escritas pelo GDS (fromIds) ou endereçadas a ele (partnerIds).
+     * <p>
+     * No ePHEM 16 a equipe respondia por "Enviar mensagem" escolhendo o GDS como destinatario. No ePHEM 18
+     * de Cabo Verde so ha "Registar uma Nota"; a nota so ganha destinatario quando menciona o GDS (@GDS App).
+     * Notas sem a mencao ficam de fora: sao conversa interna da equipe e nao devem chegar ao cidadao.
+     */
+    static Object[] filtroMensagens(EphemMessageParameters parameters) {
         return new Object[]{
+                new Object[]{"model", "=", EOC_SIGNAL},
+                new Object[]{"res_id", "in", parameters.getSignalIds()},
                 new Object[]{"message_type", "=", "comment"},
-                new Object[]{"partner_ids", "in", parameters.getPartnerIds()},
+                "|",
                 new Object[]{"author_id", "in", parameters.getFromIds()},
-                new Object[]{"res_id", "in", parameters.getSignalIds()}
+                new Object[]{"partner_ids", "in", parameters.getPartnerIds()}
         };
     }
 }

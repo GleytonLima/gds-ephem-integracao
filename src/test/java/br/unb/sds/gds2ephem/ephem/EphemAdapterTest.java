@@ -515,8 +515,25 @@ class EphemAdapterTest {
         assertEquals("search_count", contagem[4]);
         org.assertj.core.api.Assertions.assertThat(contagem[5]).isEqualTo(listagem[5]);
         org.assertj.core.api.Assertions.assertThat((Object[]) ((Object[]) listagem[5])[0])
+                .filteredOn(condicao -> condicao instanceof Object[])
                 .anySatisfy(condicao -> org.assertj.core.api.Assertions.assertThat((Object[]) condicao)
                         .containsExactly("res_id", "in", new Object[]{555L}));
+    }
+
+    @Test
+    @DisplayName("Filtro de mensagens: do signal (eoc.signal), comentarios, escritos pelo GDS OU endereçados a ele")
+    void filtroMensagensAutorOuDestinatario() {
+        final var filtro = EphemAdapter.filtroMensagens(EphemMessageParameters.builder()
+                .signalIds(new Object[]{188L}).fromIds(new Object[]{2097L}).partnerIds(new Object[]{2097L}).build());
+
+        org.assertj.core.api.Assertions.assertThat(filtro).hasSize(6);
+        org.assertj.core.api.Assertions.assertThat((Object[]) filtro[0]).containsExactly("model", "=", "eoc.signal");
+        org.assertj.core.api.Assertions.assertThat((Object[]) filtro[1]).containsExactly("res_id", "in", new Object[]{188L});
+        org.assertj.core.api.Assertions.assertThat((Object[]) filtro[2]).containsExactly("message_type", "=", "comment");
+        // notacao polonesa do Odoo: "|" junta as duas condicoes seguintes
+        org.assertj.core.api.Assertions.assertThat(filtro[3]).isEqualTo("|");
+        org.assertj.core.api.Assertions.assertThat((Object[]) filtro[4]).containsExactly("author_id", "in", new Object[]{2097L});
+        org.assertj.core.api.Assertions.assertThat((Object[]) filtro[5]).containsExactly("partner_ids", "in", new Object[]{2097L});
     }
 
     @Test
