@@ -128,10 +128,7 @@ public class EphemV2SignalMapper {
                 .map(t -> t.getLocationMap())
                 .orElse(null);
 
-        final var country = Optional.ofNullable(evento.getUserCountry())
-                .filter(c -> !c.isBlank())
-                .or(() -> texto(data, locationMap, "country_source_field"));
-        country.ifPresent(c -> geo.put("country", COUNTRY_ISO.getOrDefault(normalizar(c), c.trim())));
+        paisDoEvento(evento, data).ifPresent(c -> geo.put("country", COUNTRY_ISO.getOrDefault(normalizar(c), c.trim())));
         texto(data, locationMap, "state_source_field").ifPresent(s -> geo.put("state", s));
         texto(data, locationMap, "district_source_field").ifPresent(d -> geo.put("district", d));
         return geo;
@@ -171,7 +168,7 @@ public class EphemV2SignalMapper {
         for (String format : ONSET_DATE_FORMATS) {
             try {
                 final var date = LocalDate.parse(raw, DateTimeFormatter.ofPattern(format));
-                return Optional.of(iso(date.atStartOfDay(zoneDoPais(evento.getUserCountry())).toInstant()));
+                return Optional.of(iso(date.atStartOfDay(zoneDoPais(paisDoEvento(evento, data).orElse(null))).toInstant()));
             } catch (DateTimeParseException ignored) {
                 // tenta o proximo formato
             }
@@ -180,8 +177,31 @@ public class EphemV2SignalMapper {
         return Optional.empty();
     }
 
+    /**
+     * Pais do usuario; sem ele (ex.: usuario criado pelo admin), o pais informado no formulario.
+     * Decide tanto o geo.country quanto o fuso das datas sem hora.
+     */
+    static Optional<String> paisDoEvento(EventoIntegracao evento, JsonNode data) {
+        final var locationMap = Optional.ofNullable(evento.getEventoIntegracaoTemplate())
+                .map(t -> t.getLocationMap())
+                .orElse(null);
+        return Optional.ofNullable(evento.getUserCountry())
+                .filter(c -> !c.isBlank())
+                .or(() -> texto(data, locationMap, "country_source_field"));
+    }
+
     static ZoneId zoneDoPais(String pais) {
-        final var zone = EphemMapper.COUNTRY_ZONE_ID_MAP.get(Optional.ofNullable(pais).orElse("").toLowerCase(Locale.ROOT).trim());
+        final var chave = Optional.ofNullable(pais).orElse("").toLowerCase(Locale.ROOT).trim();
+        var zone = EphemMapper.COUNTRY_ZONE_ID_MAP.get(chave);
+        if (isNull(zone)) {
+            // as chaves do mapa misturam nomes com e sem acento ("guiné-bissau", "sao tome and principe")
+            final var semAcento = normalizar(chave);
+            zone = EphemMapper.COUNTRY_ZONE_ID_MAP.entrySet().stream()
+                    .filter(e -> normalizar(e.getKey()).equals(semAcento))
+                    .map(Map.Entry::getValue)
+                    .findFirst()
+                    .orElse(null);
+        }
         return ZoneId.of(isNull(zone) ? EphemMapper.DEFAULT_ZONE_ID : zone);
     }
 

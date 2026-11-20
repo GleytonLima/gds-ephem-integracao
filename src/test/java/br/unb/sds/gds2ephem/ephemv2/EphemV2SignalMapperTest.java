@@ -120,4 +120,35 @@ class EphemV2SignalMapperTest {
                 .path("onset_date").asText()).isEqualTo("2026-07-01T10:30:00Z");
         assertThat(mapper.mapear(evento("{\"evento_data_ocorrencia\": \"ontem\"}"), "d").has("onset_date")).isFalse();
     }
+
+    @Test
+    @DisplayName("Usuario sem pais: fuso e geo vem do pais do formulario (caso do usuario criado pelo admin)")
+    void fusoPeloPaisDoFormulario() {
+        final var evento = evento("{\"evento_data_ocorrencia\": \"18-11-2026\", \"evento_pais_ocorrencia\": \"Cabo Verde\"}");
+        evento.setUserCountry(null);
+
+        final var body = mapper.mapear(evento, "d");
+
+        // meia-noite em Cabo Verde (UTC-1), nao em Brasilia
+        assertThat(body.path("onset_date").asText()).isEqualTo("2026-11-18T01:00:00Z");
+        assertThat(body.path("geo").path("country").asText()).isEqualTo("CV");
+    }
+
+    @Test
+    @DisplayName("Pais do usuario tem prioridade sobre o do formulario")
+    void fusoPeloPaisDoUsuario() {
+        final var evento = evento("{\"evento_data_ocorrencia\": \"18-11-2026\", \"evento_pais_ocorrencia\": \"Cabo Verde\"}");
+
+        assertThat(mapper.mapear(evento, "d").path("onset_date").asText()).isEqualTo("2026-11-18T03:00:00Z");
+    }
+
+    @Test
+    @DisplayName("Fuso ignora maiusculas e acentos; pais desconhecido usa o padrao (Brasilia)")
+    void zoneDoPais() {
+        assertThat(EphemV2SignalMapper.zoneDoPais("CABO VERDE")).hasToString("Atlantic/Cape_Verde");
+        assertThat(EphemV2SignalMapper.zoneDoPais("Guine-Bissau")).hasToString("Africa/Bissau");
+        assertThat(EphemV2SignalMapper.zoneDoPais("Guiné-Bissau")).hasToString("Africa/Bissau");
+        assertThat(EphemV2SignalMapper.zoneDoPais("Narnia")).hasToString("America/Sao_Paulo");
+        assertThat(EphemV2SignalMapper.zoneDoPais(null)).hasToString("America/Sao_Paulo");
+    }
 }
