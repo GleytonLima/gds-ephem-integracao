@@ -99,8 +99,9 @@ class EphemEventosMensagensControllerTest {
         verify(ephemPort).listarMensagens(captor.capture());
         final var filtros = captor.getValue();
         assertThat(filtros.getSignalIds()).containsExactly(SIGNAL_ID);
-        assertThat(filtros.getFromIds()).containsExactly(GDS_USER_ID, ADMIN_USER_ID);
-        assertThat(filtros.getPartnerIds()).containsExactly(GDS_USER_ID, ADMIN_USER_ID);
+        // conversa com o GDS: escritas por ele ou endereçadas a ele (quem responde no ePHEM nao precisa ser o admin)
+        assertThat(filtros.getFromIds()).containsExactly(GDS_USER_ID);
+        assertThat(filtros.getPartnerIds()).containsExactly(GDS_USER_ID);
         assertThat(filtros.getLimit()).isEqualTo(5L);
         assertThat(filtros.getOffset()).isEqualTo(10L);
     }

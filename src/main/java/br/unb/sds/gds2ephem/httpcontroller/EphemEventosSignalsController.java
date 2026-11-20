@@ -89,7 +89,6 @@ public class EphemEventosSignalsController {
             throw new ResponseStatusException(UNPROCESSABLE_ENTITY, "configuracao nao efetuada. contate o administrador do sistema");
         }
         final var idUsuarioGdsApp = config.get().getEphemGdsUserId();
-        final var adminUserId = config.get().getEphemAdminUserId();
         final var evento = eventoIntegracaoRepository.findById(eventId);
         if (evento.isEmpty() || evento.get().getStatus().equals(EventoIntegracaoStatus.DELETADO.name())) {
             throw new ResponseStatusException(NOT_FOUND, "evento nao encontrado");
@@ -100,9 +99,10 @@ public class EphemEventosSignalsController {
             return EntityModel.of(assembler.toModel(Page.<SinalMensagem>empty(pageRequest), EntityModel::of));
         }
         final var filters = EphemMessageParameters.builder()
-                .fromIds(new Object[]{idUsuarioGdsApp, adminUserId})
+                // escritas pelo GDS ou endereçadas a ele (respostas da equipe, inclusive notas que mencionam o GDS)
+                .fromIds(new Object[]{idUsuarioGdsApp})
                 .signalIds(new Object[]{evento.get().getSignalId()})
-                .partnerIds(new Object[]{idUsuarioGdsApp, adminUserId})
+                .partnerIds(new Object[]{idUsuarioGdsApp})
                 .limit(Long.valueOf(size))
                 .offset((long) page * (long) size)
                 .build();
