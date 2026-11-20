@@ -5,7 +5,7 @@ import br.unb.sds.gds2ephem.application.EphemPort;
 import br.unb.sds.gds2ephem.application.EventoIntegracaoRepository;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracaoStatus;
-import br.unb.sds.gds2ephem.configs.WebSecurityConfiguration;
+import br.unb.sds.gds2ephem.security.SecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -33,10 +32,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @WebMvcTest(EphemEventosSignalsController.class)
-@Import(WebSecurityConfiguration.class)
+@Import(SecurityConfig.class)
 class EphemEventosSignalsControllerTest {
-    @MockBean
-    private JwtDecoder jwtDecoder;
     @Autowired
     private MockMvc mockMvc;
     @MockBean

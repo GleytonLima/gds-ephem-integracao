@@ -1,5 +1,6 @@
 package br.unb.sds.gds2ephem.application.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.Data;
 import org.hibernate.annotations.TypeDef;
@@ -20,5 +21,9 @@ public class ConfiguracaoSistema {
     private Long ephemAdminUserId;
     private Long ephemGdsUserId;
     private Long communityLeadersSourceId;
+    /**
+     * Segredo: pode ser gravado (PATCH /configuracoes) mas nunca sai nas respostas da API.
+     */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String ephemAdminApiKey;
 }
