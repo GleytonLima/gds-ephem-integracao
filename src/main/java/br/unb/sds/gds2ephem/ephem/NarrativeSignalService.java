@@ -39,7 +39,7 @@ public class NarrativeSignalService {
 
         if (!userName.isEmpty()) {
             stringBuilder.append(", de ")
-                    .append(userName);
+                    .append(HtmlUtils.htmlEscape(userName));
         }
 
         stringBuilder.append(" (email: ")

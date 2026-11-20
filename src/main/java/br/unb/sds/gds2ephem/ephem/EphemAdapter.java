@@ -307,6 +307,23 @@ public class EphemAdapter implements EphemPort {
 
     @Override
     @SneakyThrows
+    public Long criarNotaHistorico(Long signalId, Long authorPartnerId, String html) {
+        this.autenticar();
+        final var mensagemParametros = Map.ofEntries(
+                entry("body", html),
+                entry("author_id", authorPartnerId),
+                // notification: fica no historico do ePHEM, fora da conversa com o GDS (que le so comment)
+                entry("message_type", "notification"),
+                entry(MODEL_PARAMETER_NAME, EOC_SIGNAL),
+                entry("res_id", signalId)
+        );
+        final var executeParametros = asList(db, uid, odooApiKey, "mail.message", "create", List.of(mensagemParametros));
+
+        return ((Integer) this.xmlRpcClientObject.execute(EXECUTE_KW, executeParametros)).longValue();
+    }
+
+    @Override
+    @SneakyThrows
     public Long addSource(SignalSource signalSource) {
         if (signalSource == null) {
             throw new IllegalArgumentException("SignalSource cannot be null");

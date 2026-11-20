@@ -27,6 +27,7 @@ public class EphemScheduler {
     private final EventoIntegracaoRepository eventoIntegracaoRepository;
     private final NotificationService notificationService;
     private final SignalPublisher signalPublisher;
+    private final NotaInicialService notaInicialService;
 
     @Scheduled(fixedDelay = 30_000, initialDelay = 10_000)
     public void execute() {
@@ -55,6 +56,8 @@ public class EphemScheduler {
                         eventoIntegracao.setStatus(EventoIntegracaoStatus.PROCESSADO.name());
                         eventoIntegracao.setStatusMessage(String.format("signal criado com suceso com id: %d", signalId));
                         eventoIntegracaoRepository.save(eventoIntegracao);
+
+                        notaInicialService.registrar(eventoIntegracao, signalId);
                     } catch (Exception e) {
                         log.error("falha na criacao do evento", e);
 

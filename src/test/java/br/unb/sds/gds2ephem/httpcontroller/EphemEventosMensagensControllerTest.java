@@ -157,13 +157,31 @@ class EphemEventosMensagensControllerTest {
     @DisplayName("POST mensagem envia o texto sanitizado como usuario GDS, notificando o admin")
     @WithMockUser(authorities = {"my.scope"})
     void criarMensagem() throws Exception {
+        when(ephemPort.criarMensagem(anyLong(), anyLong(), anyString(), anyLong())).thenReturn(901L);
+
         mockMvc.perform(post("/eventos/{id}/mensagens", EVENTO_ID)
                         .contentType(MediaType.APPLICATION_JSON).with(csrf())
                         .content("{\"message\": \"<b>Atualizacao</b><script>alert(1)</script>\"}"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(901))
                 .andExpect(jsonPath("$.message").value("<b>Atualizacao</b><script>alert(1)</script>"));
 
         verify(ephemPort).criarMensagem(SIGNAL_ID, GDS_USER_ID, "<b>Atualizacao</b>", ADMIN_USER_ID);
+    }
+
+    @Test
+    @DisplayName("POST mensagem com autor: a nota no ePHEM ganha o cabecalho com nome e email, escapados")
+    @WithMockUser(authorities = {"my.scope"})
+    void criarMensagemComAutor() throws Exception {
+        mockMvc.perform(post("/eventos/{id}/mensagens", EVENTO_ID)
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
+                        .content("{\"message\": \"O caso segue em observacao.\", \"authorName\": \"Joao <Ramos>\","
+                                + " \"authorEmail\": \"joao.ramos@email.com\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("O caso segue em observacao."));
+
+        verify(ephemPort).criarMensagem(SIGNAL_ID, GDS_USER_ID,
+                "<p><b>Joao &lt;Ramos&gt;</b> (joao.ramos@email.com) via GDS:</p>O caso segue em observacao.", ADMIN_USER_ID);
     }
 
     @Test

@@ -31,6 +31,14 @@ public interface EphemPort {
 
     Long criarMensagem(Long signalId, Long userId, String mensagem, Long partnerId);
 
+    /**
+     * Registra uma nota de historico no signal (message_type notification). Ela aparece no chatter do ePHEM, mas
+     * nao entra na conversa com o GDS, porque {@link #listarMensagens} so le mensagens do tipo comment.
+     *
+     * @return id da mail.message criada
+     */
+    Long criarNotaHistorico(Long signalId, Long authorPartnerId, String html);
+
     HashMap<String, Object> consultarSignalPorId(Long id);
 
     void deletarSignalPorId(Long signalId);

@@ -131,8 +131,9 @@ public class EphemEventosSignalsController {
         if (isNull(evento.get().getSignalId())) {
             throw new ResponseStatusException(CONFLICT, "o evento ainda nao foi enviado ao ePHEM; tente novamente mais tarde");
         }
-        ephemPort.criarMensagem(evento.get().getSignalId(), idUsuarioGdsApp, mensagem.getSanitizedMessage(), adminUserId);
-        return ResponseEntity.ok(new SignalMessageResponse(mensagem.getMessage()));
+        final var mensagemId = ephemPort.criarMensagem(evento.get().getSignalId(), idUsuarioGdsApp,
+                mensagem.getMensagemComAutor(), adminUserId);
+        return ResponseEntity.ok(new SignalMessageResponse(mensagemId, mensagem.getMessage()));
     }
 }
 
