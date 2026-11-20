@@ -1,5 +1,5 @@
 # Define a imagem base
-FROM adoptopenjdk:11-jre-hotspot
+FROM eclipse-temurin:11-jre
 
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
