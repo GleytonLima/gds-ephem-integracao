@@ -7,7 +7,7 @@ import br.unb.sds.gds2ephem.application.model.ConfiguracaoSistema;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracaoStatus;
 import br.unb.sds.gds2ephem.application.model.SinalMensagem;
-import br.unb.sds.gds2ephem.configs.WebSecurityConfiguration;
+import br.unb.sds.gds2ephem.security.SecurityConfig;
 import br.unb.sds.gds2ephem.ephem.EphemMessageParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,15 +41,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * porque a v2 nao expoe mail.message.
  */
 @WebMvcTest(EphemEventosSignalsController.class)
-@Import(WebSecurityConfiguration.class)
+@Import(SecurityConfig.class)
 class EphemEventosMensagensControllerTest {
     private static final long EVENTO_ID = 10L;
     private static final long SIGNAL_ID = 555L;
     private static final long GDS_USER_ID = 7L;
     private static final long ADMIN_USER_ID = 3L;
 
-    @MockBean
-    private JwtDecoder jwtDecoder;
     @Autowired
     private MockMvc mockMvc;
     @MockBean
