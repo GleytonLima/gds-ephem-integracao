@@ -36,4 +36,9 @@ public interface EphemPort {
     void deletarSignalPorId(Long signalId);
 
     List<SinalMensagem> listarMensagens(EphemMessageParameters ephemMessageParameters);
+
+    /**
+     * Total de mensagens com os mesmos filtros de {@link #listarMensagens}, ignorando limit/offset.
+     */
+    long contarMensagens(EphemMessageParameters ephemMessageParameters);
 }

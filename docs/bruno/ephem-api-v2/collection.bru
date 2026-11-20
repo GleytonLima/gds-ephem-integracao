@@ -1,0 +1,20 @@
+meta {
+  name: ePHEM API v2
+}
+
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{apiKey}}
+}
+
+docs {
+  Testes da API REST v2 do ePHEM (modulo ephem_api_base), conforme o "ePHEM API v2 Integrator Guide".
+
+  - 01 a 03 so leem: podem rodar a qualquer momento.
+  - 04 cria e altera signals de teste (external_id BRUNO-TEST-<timestamp>). Rode so em ambiente de dev/treinamento.
+
+  A API key vem da variavel de ambiente EPHEM_NOVO_API_KEY (ou de um arquivo .env nesta pasta, ver .env.example).
+}

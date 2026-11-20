@@ -1,0 +1,23 @@
+meta {
+  name: Status nao e atualizavel (422)
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/signals/{{externalId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "status": "closed"
+  }
+}
+
+tests {
+  test("422", function() {
+    expect(res.getStatus()).to.equal(422);
+  });
+}

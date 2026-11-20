@@ -1,0 +1,27 @@
+meta {
+  name: Municipios do estado
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/districts?state_id={{stateId}}
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  const data = (res.getBody() || {}).data || [];
+  if (data.length) {
+    bru.setVar("districtId", data[0].id);
+    bru.setVar("districtName", data[0].name);
+  }
+}
+
+tests {
+  test("200 e municipios do estado pedido", function() {
+    expect(res.getStatus()).to.equal(200);
+    const data = res.getBody().data;
+    data.forEach(d => expect(d.state_id).to.equal(bru.getVar("stateId")));
+  });
+}

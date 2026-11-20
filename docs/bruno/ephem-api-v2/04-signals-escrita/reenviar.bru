@@ -1,0 +1,29 @@
+meta {
+  name: Reenviar o mesmo external_id (idempotente)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/signals
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "external_id": "{{externalId}}",
+    "title": "Corpo diferente, deve ser ignorado",
+    "health_interface": ["Animal"],
+    "description": "ignorado",
+    "source": { "address": "https://gds.proepi.org.br" }
+  }
+}
+
+tests {
+  test("200 com o mesmo signal, sem duplicar", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.id).to.equal(bru.getVar("signalId"));
+    expect(res.getBody().data.title).to.equal("Teste de integracao GDS (Bruno)");
+  });
+}

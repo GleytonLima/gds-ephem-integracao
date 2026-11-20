@@ -1,26 +1,17 @@
 package br.unb.sds.gds2ephem.ephem;
 
-import br.unb.sds.gds2ephem.application.EphemPort;
 import br.unb.sds.gds2ephem.application.EventoIntegracaoRepository;
+import br.unb.sds.gds2ephem.application.SignalPublisher;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracao;
 import br.unb.sds.gds2ephem.application.model.EventoIntegracaoStatus;
-import br.unb.sds.gds2ephem.application.model.exceptions.EventoIntegracaoValidacaoException;
 import br.unb.sds.gds2ephem.infrastructure.NotificationService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
-import com.networknt.schema.ValidationMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static br.unb.sds.gds2ephem.ephem.EmojiToPortugues.tratarCaracteresEspeciaisEventoIntegracao;
 
@@ -34,11 +25,8 @@ public class EphemScheduler {
     private final TransactionTemplate transactionTemplate;
 
     private final EventoIntegracaoRepository eventoIntegracaoRepository;
-    private final EphemPort ephemPort;
     private final NotificationService notificationService;
-
-    private final NarrativeSignalService narrativeSignalService;
-    private final EphemMapper ephemMapper;
+    private final SignalPublisher signalPublisher;
 
     @Scheduled(fixedDelay = 30_000, initialDelay = 10_000)
     public void execute() {
@@ -59,16 +47,9 @@ public class EphemScheduler {
                 for (EventoIntegracao eventoIntegracao : eventos) {
                     try {
                         log.info("processando evento {}", eventoIntegracao.getId());
-                        final var objectMapper = new ObjectMapper();
                         tratarCaracteresEspeciaisEventoIntegracao(eventoIntegracao);
-                        final var dadosMapeados = ephemMapper.mapearData(eventoIntegracao);
 
-                        validarDados(eventoIntegracao.getEventoIntegracaoTemplate().getDefinition(), dadosMapeados);
-                        final var dadosRequest = objectMapper.convertValue(dadosMapeados, new TypeReference<Map<String, Object>>() {
-                        });
-                        dadosRequest.put("description", narrativeSignalService.buildNarrativeDescription(eventoIntegracao));
-
-                        final var signalId = ephemPort.criarSignal(eventoIntegracao, dadosRequest);
+                        final Long signalId = signalPublisher.publicar(eventoIntegracao);
 
                         eventoIntegracao.setSignalId(signalId);
                         eventoIntegracao.setStatus(EventoIntegracaoStatus.PROCESSADO.name());
@@ -91,22 +72,6 @@ public class EphemScheduler {
                 }
                 return true;
             }));
-        }
-    }
-
-    public void validarDados(JsonNode definition, JsonNode data) {
-        final var factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
-        final var jsonSchema = factory.getSchema(definition);
-
-        final var errosSchema = jsonSchema.validate(data);
-
-        final var listaErros = errosSchema.stream()
-                .map(ValidationMessage::getMessage)
-                .collect(Collectors.toList());
-
-        if (!listaErros.isEmpty()) {
-            log.error("Erro ao processar os dados: {}", listaErros);
-            throw new EventoIntegracaoValidacaoException(listaErros.toString());
         }
     }
 }

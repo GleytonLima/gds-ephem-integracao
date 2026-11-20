@@ -1,0 +1,29 @@
+meta {
+  name: Municipio desconhecido (422 em geo.district)
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/signals
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "external_id": "BRUNO-TEST-invalido-geo",
+    "title": "Nao deve ser salvo",
+    "health_interface": ["Human"],
+    "description": "x",
+    "geo": { "country": "{{country}}", "district": "Municipio Que Nao Existe" },
+    "source": { "address": "https://gds.proepi.org.br" }
+  }
+}
+
+tests {
+  test("422 em geo.district: o integrador usa isso para reenviar sem o municipio", function() {
+    expect(res.getStatus()).to.equal(422);
+    expect(res.getBody().error.details[0].field).to.equal("geo.district");
+  });
+}

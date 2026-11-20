@@ -1,0 +1,23 @@
+meta {
+  name: Key invalida da 401
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/countries
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: key-invalida-de-proposito
+}
+
+tests {
+  test("401 unauthorized no envelope de erro", function() {
+    expect(res.getStatus()).to.equal(401);
+    expect(res.getBody().error.code).to.equal("unauthorized");
+    expect(res.getBody().error).to.have.property("request_id");
+  });
+}

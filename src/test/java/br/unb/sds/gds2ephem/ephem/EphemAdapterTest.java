@@ -436,6 +436,99 @@ class EphemAdapterTest {
     }
 
     @Test
+    @DisplayName("criarSignal tambem cria a mensagem padrao e a fonte (lider comunitario) com nome e telefone do usuario")
+    void criarSignal_CriaMensagemEFonte() throws Exception {
+        ReflectionTestUtils.setField(adapter, "uid", uid);
+        ReflectionTestUtils.setField(adapter, "db", db);
+        ReflectionTestUtils.setField(adapter, "odooApiKey", odooApiKey);
+        final var config = new br.unb.sds.gds2ephem.application.model.ConfiguracaoSistema();
+        config.setCommunityLeadersSourceId(4L);
+        when(configuracaoSistemaRepository.findById(br.unb.sds.gds2ephem.application.model.ConfiguracaoSistema.DEFAULT_SYSTEM_CONFIG_ID))
+                .thenReturn(java.util.Optional.of(config));
+        when(objectClient.execute(anyString(), anyList())).thenReturn(77, 88, 99);
+
+        final var signalId = adapter.criarSignal(createIntegrationEvent(), Map.of("chave", "valor"));
+
+        assertEquals(77L, signalId);
+        verify(objectClient).execute(eq(EphemAdapter.EXECUTE_KW), eq(List.of(db, uid, odooApiKey, "mail.message", "create",
+                List.of(Map.of(
+                        "body", "Este registro foi gerado a partir do aplicativo Guardiões da Saúde",
+                        "author_id", uid,
+                        "message_type", "comment",
+                        "model", "eoc.signal",
+                        "res_id", 77L)))));
+        verify(objectClient).execute(eq(EphemAdapter.EXECUTE_KW), eq(List.of(db, uid, odooApiKey, "eoc.signal.sources", "create",
+                List.of(Map.of(
+                        "signal_id", 77L,
+                        "source_type", 4L,
+                        "source_name", "example",
+                        "source_phone", "99999999999999")))));
+    }
+
+    @Test
+    @DisplayName("listarRegistros usa o idioma configurado (odoo.lang) quando a consulta nao define um")
+    void listarRegistrosUsaIdiomaConfigurado() throws Exception {
+        ReflectionTestUtils.setField(adapter, "uid", uid);
+        ReflectionTestUtils.setField(adapter, "db", db);
+        ReflectionTestUtils.setField(adapter, "odooApiKey", odooApiKey);
+        ReflectionTestUtils.setField(adapter, "odooLang", "pt_PT");
+        when(objectClient.execute(anyString(), anyList())).thenReturn(new Object[]{});
+
+        adapter.listarRegistros(EphemParameters.builder().nomeModelo("eoc.signal").build());
+
+        final var captor = org.mockito.ArgumentCaptor.forClass(List.class);
+        verify(objectClient).execute(eq(EphemAdapter.EXECUTE_KW), captor.capture());
+        final var kwargs = (Map<?, ?>) captor.getValue().get(6);
+        assertEquals(Map.of(CONTEXT_LANG_KEY, "pt_PT"), kwargs.get(CONTEXT_PARAMETER_NAME));
+    }
+
+    @Test
+    @DisplayName("listarMensagens e contarMensagens usam o mesmo filtro em mail.message")
+    void mensagensListagemEContagemUsamMesmoFiltro() throws Exception {
+        ReflectionTestUtils.setField(adapter, "uid", uid);
+        ReflectionTestUtils.setField(adapter, "db", db);
+        ReflectionTestUtils.setField(adapter, "odooApiKey", odooApiKey);
+        final var parametros = EphemMessageParameters.builder()
+                .signalIds(new Object[]{555L}).fromIds(new Object[]{7L, 3L}).partnerIds(new Object[]{7L, 3L})
+                .limit(5L).offset(10L).build();
+        final var mensagem = new java.util.HashMap<String, Object>();
+        mensagem.put("id", 99);
+        mensagem.put("body", "<p>oi</p>");
+        when(objectClient.execute(eq(EphemAdapter.EXECUTE_KW), any(Object[].class)))
+                .thenReturn(new Object[]{mensagem})
+                .thenReturn(23);
+
+        final var mensagens = adapter.listarMensagens(parametros);
+        final var total = adapter.contarMensagens(parametros);
+
+        assertEquals(1, mensagens.size());
+        assertEquals(99, mensagens.get(0).getId());
+        assertEquals(23L, total);
+        final var captor = org.mockito.ArgumentCaptor.forClass(Object[].class);
+        verify(objectClient, times(2)).execute(eq(EphemAdapter.EXECUTE_KW), captor.capture());
+        final var listagem = captor.getAllValues().get(0);
+        final var contagem = captor.getAllValues().get(1);
+        assertEquals("search_read", listagem[4]);
+        assertEquals("search_count", contagem[4]);
+        org.assertj.core.api.Assertions.assertThat(contagem[5]).isEqualTo(listagem[5]);
+        org.assertj.core.api.Assertions.assertThat((Object[]) ((Object[]) listagem[5])[0])
+                .anySatisfy(condicao -> org.assertj.core.api.Assertions.assertThat((Object[]) condicao)
+                        .containsExactly("res_id", "in", new Object[]{555L}));
+    }
+
+    @Test
+    @DisplayName("criarSignal devolve o id mesmo se a fonte falhar (o signal nao pode ser recriado)")
+    void criarSignal_FonteFalhaNaoRelanca() throws Exception {
+        ReflectionTestUtils.setField(adapter, "uid", uid);
+        ReflectionTestUtils.setField(adapter, "db", db);
+        ReflectionTestUtils.setField(adapter, "odooApiKey", odooApiKey);
+        when(configuracaoSistemaRepository.findById(anyLong())).thenThrow(new RuntimeException("banco fora"));
+        when(objectClient.execute(anyString(), anyList())).thenReturn(77, 88);
+
+        assertEquals(77L, adapter.criarSignal(createIntegrationEvent(), Map.of("chave", "valor")));
+    }
+
+    @Test
     @DisplayName("Deve executar criarSignal com sucesso mas mensagem com erro")
     void criarSignal_MensagemErro() throws Exception {
         ReflectionTestUtils.setField(adapter, "uid", uid);

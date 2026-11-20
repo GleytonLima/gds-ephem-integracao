@@ -69,6 +69,13 @@ public class EphemAdapter implements EphemPort {
 
     @Value("${odoo.apikey}")
     private String odooApiKey;
+
+    /**
+     * Idioma do context nas consultas (nomes de pais/estado/estagio vem traduzidos nele).
+     * Precisa estar ativo no Odoo: a UnB usa pt_BR, Cabo Verde so tem pt_PT e en_US.
+     */
+    @Value("${odoo.lang:pt_BR}")
+    private String odooLang = PT_BR;
     @Getter
     private Integer uid;
 
@@ -117,7 +124,7 @@ public class EphemAdapter implements EphemPort {
                 entry(OFFSET_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getOffset()).orElse(0)),
                 entry(ORDER_BY_PARAMETER_NAME, Optional.ofNullable(ephemParameters.getSort()).orElse("")),
                 entry(CONTEXT_PARAMETER_NAME, Map.ofEntries(
-                        entry(CONTEXT_LANG_KEY, Optional.ofNullable(ephemParameters.getContextLang()).orElse(PT_BR))
+                        entry(CONTEXT_LANG_KEY, Optional.ofNullable(ephemParameters.getContextLang()).orElse(odooLang))
                 ))
         );
         var filtros = Optional.ofNullable(ephemParameters.getFiltros()).orElse(SEM_FILTRO);
@@ -303,12 +310,7 @@ public class EphemAdapter implements EphemPort {
         this.autenticar();
         Object[] messageParams = new Object[]{db, uid, odooApiKey,
                 "mail.message", "search_read",
-                new Object[]{new Object[]{
-                        new Object[]{"message_type", "=", "comment"},
-                        new Object[]{"partner_ids", "in", parameters.getPartnerIds()},
-                        new Object[]{"author_id", "in", parameters.getFromIds()},
-                        new Object[]{"res_id", "in", parameters.getSignalIds()}
-                }},
+                new Object[]{filtroMensagens(parameters)},
                 new HashMap() {
                     {
                         put("fields", EphemMessageParameters.FIELDS);
@@ -334,5 +336,24 @@ public class EphemAdapter implements EphemPort {
                 .collect(Collectors.toList());
 
         return SinalMensagem.fromListOfMaps(listMap);
+    }
+
+    @Override
+    @SneakyThrows
+    public long contarMensagens(EphemMessageParameters parameters) {
+        this.autenticar();
+        final Object[] countParams = new Object[]{db, uid, odooApiKey,
+                "mail.message", "search_count",
+                new Object[]{filtroMensagens(parameters)}};
+        return ((Number) this.xmlRpcClientObject.execute(EXECUTE_KW, countParams)).longValue();
+    }
+
+    private static Object[] filtroMensagens(EphemMessageParameters parameters) {
+        return new Object[]{
+                new Object[]{"message_type", "=", "comment"},
+                new Object[]{"partner_ids", "in", parameters.getPartnerIds()},
+                new Object[]{"author_id", "in", parameters.getFromIds()},
+                new Object[]{"res_id", "in", parameters.getSignalIds()}
+        };
     }
 }

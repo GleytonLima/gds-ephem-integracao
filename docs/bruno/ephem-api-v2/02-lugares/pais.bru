@@ -1,0 +1,18 @@
+meta {
+  name: Pais por ISO
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/countries/{{country}}
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("200 e o pais pedido", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.code).to.equal(bru.getEnvVar("country"));
+  });
+}
