@@ -181,9 +181,10 @@ class EphemAdapterTest {
 
         adapter.listarRegistros(parameters);
 
+        // uma consulta search_read (a outra chamada e o fields_get que filtra os campos do modelo)
         verify(objectClient, times(1)).execute(
                 eq(EphemAdapter.EXECUTE_KW),
-                anyList()
+                argThat((List<?> args) -> "search_read".equals(args.get(4)))
         );
     }
 
@@ -203,9 +204,10 @@ class EphemAdapterTest {
         assertEquals(stringObjectHashMap, new HashMap<String, Object>() {{
             put("chave1", "valor1");
         }});
+        // uma consulta search_read (a outra chamada e o fields_get que filtra os campos do modelo)
         verify(objectClient, times(1)).execute(
                 eq(EphemAdapter.EXECUTE_KW),
-                anyList()
+                argThat((List<?> args) -> "search_read".equals(args.get(4)))
         );
     }
 
@@ -220,9 +222,10 @@ class EphemAdapterTest {
 
         adapter.consultarSignalPorId(1L);
 
+        // uma consulta search_read (a outra chamada e o fields_get que filtra os campos do modelo)
         verify(objectClient, times(1)).execute(
                 eq(EphemAdapter.EXECUTE_KW),
-                anyList()
+                argThat((List<?> args) -> "search_read".equals(args.get(4)))
         );
     }
 
@@ -637,5 +640,59 @@ class EphemAdapterTest {
         when(objectClient.execute(anyString(), anyList())).thenThrow(new RuntimeException());
 
         assertThrows(RuntimeException.class, () -> adapter.deletarSignalPorId(signalId));
+    }
+
+    @Test
+    @DisplayName("listarRegistros pede so os campos que o modelo tem (ePHEM 18 nao tem country_id/state_id)")
+    void listarRegistrosIgnoraCamposInexistentes() throws Exception {
+        ReflectionTestUtils.setField(adapter, "uid", uid);
+        ReflectionTestUtils.setField(adapter, "db", db);
+        ReflectionTestUtils.setField(adapter, "odooApiKey", odooApiKey);
+        final var camposDoModelo = new HashMap<String, Object>();
+        camposDoModelo.put("id", Map.of("type", "integer"));
+        camposDoModelo.put("signal_stage_state_id", Map.of("type", "many2one"));
+        camposDoModelo.put("country_ids", Map.of("type", "many2many"));
+        when(objectClient.execute(eq(EphemAdapter.EXECUTE_KW), anyList())).thenAnswer(inv -> {
+            final List<?> args = inv.getArgument(1);
+            return "fields_get".equals(args.get(4)) ? camposDoModelo : new Object[]{};
+        });
+        final var parametros = EphemParameters.builder().nomeModelo("eoc.signal")
+                .fields(List.of("id", "country_id", "state_id", "signal_stage_state_id", "__last_update")).build();
+
+        adapter.listarRegistros(parametros);
+        adapter.listarRegistros(parametros);
+
+        final var captor = org.mockito.ArgumentCaptor.forClass(List.class);
+        verify(objectClient, times(3)).execute(eq(EphemAdapter.EXECUTE_KW), captor.capture());
+        final var chamadas = captor.getAllValues();
+        // fields_get uma vez so (cache por modelo) e dois search_read
+        assertEquals(1, chamadas.stream().filter(c -> "fields_get".equals(c.get(4))).count());
+        final var buscas = chamadas.stream().filter(c -> "search_read".equals(c.get(4))).collect(java.util.stream.Collectors.toList());
+        assertEquals(2, buscas.size());
+        buscas.forEach(b -> assertEquals(List.of("id", "signal_stage_state_id"), ((Map<?, ?>) b.get(6)).get(EphemAdapter.FIELDS_PARAMETER_NAME)));
+    }
+
+    @Test
+    @DisplayName("Se fields_get falhar, a consulta segue com os campos pedidos e tenta ler de novo depois")
+    void listarRegistrosSemFieldsGet() throws Exception {
+        ReflectionTestUtils.setField(adapter, "uid", uid);
+        ReflectionTestUtils.setField(adapter, "db", db);
+        ReflectionTestUtils.setField(adapter, "odooApiKey", odooApiKey);
+        when(objectClient.execute(eq(EphemAdapter.EXECUTE_KW), anyList())).thenAnswer(inv -> {
+            final List<?> args = inv.getArgument(1);
+            if ("fields_get".equals(args.get(4))) {
+                throw new IllegalStateException("timeout");
+            }
+            return new Object[]{};
+        });
+        final var campos = List.of("id", "country_id");
+
+        adapter.listarRegistros(EphemParameters.builder().nomeModelo("eoc.signal").fields(campos).build());
+        adapter.listarRegistros(EphemParameters.builder().nomeModelo("eoc.signal").fields(campos).build());
+
+        final var captor = org.mockito.ArgumentCaptor.forClass(List.class);
+        verify(objectClient, times(4)).execute(eq(EphemAdapter.EXECUTE_KW), captor.capture());
+        captor.getAllValues().stream().filter(c -> "search_read".equals(c.get(4)))
+                .forEach(b -> assertEquals(campos, ((Map<?, ?>) b.get(6)).get(EphemAdapter.FIELDS_PARAMETER_NAME)));
     }
 }
